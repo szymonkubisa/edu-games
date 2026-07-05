@@ -81,7 +81,9 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .hd{color:#6B5E8E}
 .cell{background:var(--bg);cursor:pointer}
 .cell.last{color:#fff}
-.hd.mark{background:var(--sun);color:#fff;border-radius:8px}
+.hd.mark{color:#C8760A;background:var(--sun-l);border-radius:8px;font-weight:800}
+.cell.guide{box-shadow:inset 0 0 0 2px var(--sun);border-radius:8px}
+.cell.cursor{box-shadow:inset 0 0 0 4px var(--sun);border-radius:8px}
 .hidden{display:none}
 @keyframes pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.25);opacity:1}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .3s ease-out both}
@@ -582,13 +584,16 @@ function buildGrid(){
       const d=document.createElement('div');
       d.className='cell';d.dataset.r=r;d.dataset.c=c;
       d.addEventListener('click',()=>gPick(r,c));
+      d.addEventListener('mouseenter',()=>gGuide(r,c));
       grid.appendChild(d);
     }
   }
+  grid.addEventListener('mouseleave',gGuideClear);
 }
 function gCells(fn){$('grid').querySelectorAll('.cell').forEach(d=>fn(d,+d.dataset.r,+d.dataset.c))}
 function gClear(){
-  gCells(d=>{d.style.background='';d.style.color='';d.textContent='';d.classList.remove('pop','last')});
+  gCells(d=>{d.style.background='';d.style.color='';d.textContent='';d.classList.remove('pop','last','guide','cursor')});
+  $('grid').querySelectorAll('.hd.mark').forEach(h=>h.classList.remove('mark'));
   gLast=null;
 }
 function gShow(R,C,ok,done){
@@ -652,22 +657,27 @@ function gPackets(a,b){
     bk.badge.style.opacity=1;bk.badge.textContent=(i+1)*b;
   }
 }
-function gMarkHeaders(a,b){
-  $('grid').querySelectorAll('.hd').forEach(h=>h.classList.remove('mark'));
-  if(a==null)return;
-  const set=new Set([a,b]);
+function gGuideClear(){
+  $('grid').querySelectorAll('.hd.mark').forEach(h=>h.classList.remove('mark'));
+  $('grid').querySelectorAll('.cell.guide,.cell.cursor').forEach(d=>d.classList.remove('guide','cursor'));
+}
+function gGuide(r,c){
+  gGuideClear();
   $('grid').querySelectorAll('.hd').forEach(h=>{
-    const v=h.dataset.ch||h.dataset.rh;
-    if(v&&set.has(+v))h.classList.add('mark');
+    if(+h.dataset.ch===c||+h.dataset.rh===r)h.classList.add('mark');
+  });
+  $('grid').querySelectorAll('.cell').forEach(d=>{
+    const dr=+d.dataset.r,dc=+d.dataset.c;
+    if(dr===r&&dc===c)d.classList.add('cursor');
+    else if((dr===r&&dc<=c)||(dc===c&&dr<=r))d.classList.add('guide');
   });
 }
-function gClearAids(){$('gBoard').innerHTML='';gMarkHeaders(null)}
+function gClearAids(){$('gBoard').innerHTML='';gGuideClear()}
 function gExploreReset(){gClear();gClearAids();$('gEq').textContent='Kliknij pole!';$('gHint').textContent=''}
 function gQuizNext(){
   const a=1+Math.floor(Math.random()*gMAX),b=1+Math.floor(Math.random()*gMAX);
   gTarget=[a,b];gClear();
   gPackets(a,b);
-  gMarkHeaders(a,b);
   $('gEq').innerHTML=eqHTML(a,'×',b,null);
   $('gHint').textContent='Tyle: '+a+' '+pl(a,['pakiet','pakiety','pakietów'])+' po '+b+'. Znajdź to pole na tabliczce!';
 }
