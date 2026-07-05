@@ -819,7 +819,7 @@ function funNext(){
   fLock=false;$('fFb').textContent='';
   let s;do{s=makeFun()}while(s===fCur);
   fCur=s;
-  const el=$('fSent');el.innerHTML=render(fCur);
+  const el=$('fSent');el.innerHTML='<span>'+render(fCur)+'</span>';
   el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
 }
 $('fListen').addEventListener('click',()=>say(fCur));
@@ -880,7 +880,7 @@ $('bSyl').addEventListener('click',()=>{
   if(!$('pgQuiz').classList.contains('hidden'))quiz();
   if(!$('pgWords').classList.contains('hidden'))wordRound();
   if(!$('pgCards').classList.contains('hidden')&&cCur)$('cWord').innerHTML=render(cCur.w);
-  if(!$('pgFun').classList.contains('hidden')&&fCur)$('fSent').innerHTML=render(fCur);
+  if(!$('pgFun').classList.contains('hidden')&&fCur)$('fSent').innerHTML='<span>'+render(fCur)+'</span>';
 });
 $('bSnd').addEventListener('click',()=>{
   snd=!snd;EduStore.set('sound',snd);$('bSnd').textContent=snd?'🔊':'🔇';
