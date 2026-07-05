@@ -106,6 +106,18 @@ a.home:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
 #wEmoji{font-size:clamp(80px,22vw,130px);text-align:center;line-height:1.2;margin:6px 0 16px;cursor:pointer}
 .wordOpt{font-size:clamp(22px,5.5vw,30px);padding:14px 10px}
 
+/* ---- czytam (karty) ---- */
+#cWord{
+  font-size:clamp(46px,12vw,80px);font-weight:700;text-align:center;
+  line-height:1.3;min-height:110px;display:flex;align-items:center;justify-content:center;
+  margin:6px 0 12px;
+}
+#cJudge .opt{font-size:clamp(19px,4.5vw,24px)}
+#cGood{border-color:var(--green);background:var(--green-l);color:#2E6B10;box-shadow:0 3px 0 var(--green)}
+#cGood:active{box-shadow:0 1px 0 var(--green)}
+#cBad{border-color:var(--sun);background:var(--sun-l);color:#8A5A0A;box-shadow:0 3px 0 var(--sun)}
+#cBad:active{box-shadow:0 1px 0 var(--sun)}
+
 /* ---- konfetti ---- */
 .cf{position:fixed;top:-40px;font-size:26px;pointer-events:none;z-index:9;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
@@ -126,6 +138,7 @@ a.home:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
 <div class="tabs">
   <button id="tStory" class="on">📖 Historyjka</button>
   <button id="tWords">🔤 Słowa</button>
+  <button id="tCards">🗣️ Czytam</button>
 </div>
 
 <!-- ===== WYBÓR ===== -->
@@ -172,6 +185,20 @@ a.home:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
   <div id="wEmoji"></div>
   <div class="opts" id="wOpts"></div>
   <div class="fb" id="wFb" style="text-align:center"></div>
+</div>
+
+<!-- ===== CZYTAM (karty) ===== -->
+<div class="card hidden" id="pgCards">
+  <div class="q" id="cQ" style="text-align:center"></div>
+  <div id="cWord"></div>
+  <div style="display:flex;justify-content:center;margin-bottom:14px">
+    <button id="cListen"></button>
+  </div>
+  <div class="opts" id="cJudge">
+    <button class="opt" id="cGood"></button>
+    <button class="opt" id="cBad"></button>
+  </div>
+  <div class="fb" id="cFb" style="text-align:center"></div>
 </div>
 </div>
 
@@ -221,13 +248,15 @@ function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 /* =============== DANE PL =============== */
 const PL={
  ui:{
-  title:'📖 Czytanie na wesoło', tabStory:'📖 Historyjka', tabWords:'🔤 Słowa',
+  title:'📖 Czytanie na wesoło', tabStory:'📖 Historyjka', tabWords:'🔤 Słowa', tabCards:'🗣️ Czytam',
   syl:'Sy-la-by',
   lblHero:'Kto jest bohaterem?', lblFriend:'Z kim?', lblPlace:'Gdzie?', lblThing:'Jaka rzecz?',
   go:'Zaczynamy! 🚀', read:'Przeczytałam! ➜', readLast:'Przeczytałam! 🌟',
   tts:'🔊 Pomóż mi', bravo:'Brawo! ⭐', retry:'Spróbuj jeszcze raz!',
   end:s=>'Super czytanie, masz '+s+' ⭐!', again:'Nowa historyjka! 📖',
   wordsQ:'Co to jest? Wybierz słowo!',
+  cardsQ:'Przeczytaj słowo na głos!', cListen:'🔊 Posłuchaj',
+  cGood:'✅ Umiem!', cBad:'🤔 Jeszcze nie', cTry:'Nic nie szkodzi! 💪',
   qHero:'Kto jest bo|ha|te|rem?', qPlace:'Gdzie to by|ło?', qThing:'Ja|ka rzecz by|ła w baj|ce?',
   sentence:(i,n)=>'Zdanie '+i+' z '+n
  },
@@ -362,13 +391,15 @@ const PL={
 /* =============== DANE EN =============== */
 const EN={
  ui:{
-  title:'📖 Fun Reading', tabStory:'📖 Story', tabWords:'🔤 Words',
+  title:'📖 Fun Reading', tabStory:'📖 Story', tabWords:'🔤 Words', tabCards:'🗣️ I read',
   syl:'Syl-la-bles',
   lblHero:'Who is the hero?', lblFriend:'With whom?', lblPlace:'Where?', lblThing:'What thing?',
   go:"Let's go! 🚀", read:'I read it! ➜', readLast:'I read it! 🌟',
   tts:'🔊 Help me', bravo:'Great! ⭐', retry:'Try again!',
   end:s=>'Great reading! You have '+s+' ⭐!', again:'New story! 📖',
   wordsQ:'What is it? Pick the word!',
+  cardsQ:'Read the word out loud!', cListen:'🔊 Listen',
+  cGood:'✅ Got it!', cBad:'🤔 Not yet', cTry:'No worries! 💪',
   qHero:'Who is the he|ro?', qPlace:'Where was it?', qThing:'What thing was in the sto|ry?',
   sentence:(i,n)=>'Sentence '+i+' of '+n
  },
@@ -511,6 +542,11 @@ function applyUI(){
   $('hTitle').textContent=u.title;
   $('tStory').textContent=u.tabStory;
   $('tWords').textContent=u.tabWords;
+  $('tCards').textContent=u.tabCards;
+  $('cQ').textContent=u.cardsQ;
+  $('cListen').textContent=u.cListen;
+  $('cGood').textContent=u.cGood;
+  $('cBad').textContent=u.cBad;
   $('bSyl').textContent=u.syl;
   $('lblHero').textContent=u.lblHero;
   $('lblFriend').textContent=u.lblFriend;
@@ -688,21 +724,58 @@ function wordRound(){
 }
 $('wEmoji').addEventListener('click',()=>say(wCur?wCur.w:''));
 
+/* =============== CZYTAM (karty) =============== */
+let cCur=null,cLock=false,cSeq=[],cPos=0;
+function cardNext(){
+  cLock=false;$('cFb').textContent='';
+  const W=D().WORDS;
+  if(cPos>=cSeq.length){cSeq=shuffle([...W]);cPos=0;}
+  cCur=cSeq[cPos++];
+  const el=$('cWord');
+  el.innerHTML=render(cCur.w);
+  el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+}
+$('cListen').addEventListener('click',()=>say(cCur?cCur.w:''));
+$('cGood').addEventListener('click',()=>{
+  if(cLock)return;cLock=true;
+  $('cGood').classList.add('pop');goodS();
+  stars=EduStore.addStar('reading').count;bumpStars();
+  $('cFb').textContent=UI().bravo;
+  setTimeout(()=>{$('cGood').classList.remove('pop');cardNext();},1100);
+});
+$('cBad').addEventListener('click',()=>{
+  if(cLock)return;cLock=true;
+  popS();say(cCur?cCur.w:'');
+  $('cFb').textContent=UI().cTry;
+  setTimeout(cardNext,1400);
+});
+
 /* =============== NAWIGACJA =============== */
-const PAGES=['pgPick','pgStory','pgQuiz','pgEnd','pgWords'];
+const PAGES=['pgPick','pgStory','pgQuiz','pgEnd','pgWords','pgCards'];
+const SIDE=['pgWords','pgCards'];
 let storyPage='pgPick';
+function setTab(which){
+  $('tStory').classList.toggle('on',which==='story');
+  $('tWords').classList.toggle('on',which==='words');
+  $('tCards').classList.toggle('on',which==='cards');
+}
 function show(id){
-  if(id!=='pgWords')storyPage=id;
+  if(!SIDE.includes(id))storyPage=id;
   PAGES.forEach(p=>$(p).classList.toggle('hidden',p!==id));
 }
 $('tStory').addEventListener('click',()=>{
-  $('tStory').classList.add('on');$('tWords').classList.remove('on');
+  setTab('story');
   show(storyPage);
 });
 $('tWords').addEventListener('click',()=>{
-  $('tWords').classList.add('on');$('tStory').classList.remove('on');
+  setTab('words');
   wordRound();
-  PAGES.forEach(p=>$(p).classList.toggle('hidden',p!=='pgWords'));
+  show('pgWords');
+});
+$('tCards').addEventListener('click',()=>{
+  setTab('cards');
+  cardNext();
+  show('pgCards');
 });
 
 /* =============== PRZEŁĄCZNIKI =============== */
@@ -715,6 +788,7 @@ $('bSyl').addEventListener('click',()=>{
   if(!$('pgStory').classList.contains('hidden'))renderStory();
   if(!$('pgQuiz').classList.contains('hidden'))quiz();
   if(!$('pgWords').classList.contains('hidden'))wordRound();
+  if(!$('pgCards').classList.contains('hidden')&&cCur)$('cWord').innerHTML=render(cCur.w);
 });
 $('bSnd').addEventListener('click',()=>{
   snd=!snd;EduStore.set('sound',snd);$('bSnd').textContent=snd?'🔊':'🔇';
@@ -723,14 +797,13 @@ $('bLang').addEventListener('click',()=>{
   lang=lang==='pl'?'en':'pl';
   EduStore.set('lang',lang);
   popS();
+  const onWords=!$('pgWords').classList.contains('hidden');
+  const onCards=!$('pgCards').classList.contains('hidden');
   applyUI();
   buildChips();
-  const onWords=!$('pgWords').classList.contains('hidden');
   resetPick();
-  if(onWords){
-    wordRound();
-    PAGES.forEach(p=>$(p).classList.toggle('hidden',p!=='pgWords'));
-  }
+  if(onWords){setTab('words');wordRound();show('pgWords');}
+  else if(onCards){setTab('cards');cSeq=[];cPos=0;cardNext();show('pgCards');}
 });
 
 /* =============== START =============== */

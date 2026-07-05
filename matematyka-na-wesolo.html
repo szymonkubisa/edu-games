@@ -81,6 +81,7 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .hd{color:#6B5E8E}
 .cell{background:var(--bg);cursor:pointer}
 .cell.last{color:#fff}
+.hd.mark{background:var(--sun);color:#fff;border-radius:8px}
 .hidden{display:none}
 @keyframes pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.25);opacity:1}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .3s ease-out both}
@@ -117,10 +118,10 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
   <!-- ============ MNOŻENIE (koszyki) ============ -->
   <section id="secK" class="panel">
     <div class="bar">
-      <button id="kExp" class="on">🔎 Odkrywaj</button>
-      <button id="kQuiz">⭐ Zagadka</button>
+      <button id="kExp">🔎 Odkrywaj</button>
+      <button id="kQuiz" class="on">⭐ Zagadka</button>
     </div>
-    <div class="ctl" id="kCtl">
+    <div class="ctl" id="kCtl" style="opacity:.4">
       <div class="stepper">
         <span class="lbl">Koszyki</span>
         <button data-t="g" data-d="-1" aria-label="Mniej koszyków">−</button>
@@ -143,23 +144,24 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
   <!-- ============ KWADRAT ============ -->
   <section id="secG" class="panel hidden">
     <div class="bar">
-      <button id="gExp" class="on">🔎 Odkrywaj</button>
-      <button id="gQuiz">⭐ Zagadka</button>
+      <button id="gExp">🔎 Odkrywaj</button>
+      <button id="gQuiz" class="on">⭐ Zagadka</button>
       <button id="gNum">Licz: 1,2,3…</button>
       <button id="gMax">Do 5</button>
     </div>
     <div class="eq" id="gEq">Kliknij pole!</div>
     <div class="hint" id="gHint"></div>
+    <div class="board" id="gBoard"></div>
     <div class="grid" id="grid"></div>
   </section>
 
   <!-- ============ DODAWANIE ============ -->
   <section id="secA" class="panel hidden">
     <div class="bar">
-      <button id="aExp" class="on">🔎 Odkrywaj</button>
-      <button id="aQuiz">⭐ Zagadka</button>
+      <button id="aExp">🔎 Odkrywaj</button>
+      <button id="aQuiz" class="on">⭐ Zagadka</button>
     </div>
-    <div class="ctl" id="aCtl">
+    <div class="ctl" id="aCtl" style="opacity:.4">
       <div class="stepper">
         <span class="lbl">Pierwszy koszyk</span>
         <button data-t="a" data-d="-1" aria-label="Mniej w pierwszym">−</button>
@@ -182,10 +184,10 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
   <!-- ============ ODEJMOWANIE ============ -->
   <section id="secS" class="panel hidden">
     <div class="bar">
-      <button id="sExp" class="on">🔎 Odkrywaj</button>
-      <button id="sQuiz">⭐ Zagadka</button>
+      <button id="sExp">🔎 Odkrywaj</button>
+      <button id="sQuiz" class="on">⭐ Zagadka</button>
     </div>
-    <div class="ctl" id="sCtl">
+    <div class="ctl" id="sCtl" style="opacity:.4">
       <div class="stepper">
         <span class="lbl">Mamy</span>
         <button data-t="m" data-d="-1" aria-label="Mniej mamy">−</button>
@@ -328,6 +330,7 @@ function refresh(){
   if(curTab==='K')kMode==='exp'?kExplore():kQuizNext();
   else if(curTab==='A')aMode==='exp'?aExplore():aQuizNext();
   else if(curTab==='S')sMode==='exp'?sExplore():sQuizNext();
+  else if(curTab==='G')gMode==='exp'?gExploreReset():gQuizNext();
 }
 
 /* ---------- motywy ---------- */
@@ -346,7 +349,7 @@ function markTheme(){
 }
 
 /* ==================== MNOŻENIE ==================== */
-let kg=3,kk=4,kMode='exp',kAnim=0,kLock=false;
+let kg=3,kk=4,kMode='quiz',kAnim=0,kLock=false;
 function kosz(n){return pl(n,['koszyk','koszyki','koszyków'])}
 function renderMul(animate,done){
   kAnim++;const id=kAnim;
@@ -420,7 +423,7 @@ $('kExp').addEventListener('click',()=>setKMode('exp'));
 $('kQuiz').addEventListener('click',()=>setKMode('quiz'));
 
 /* ==================== DODAWANIE ==================== */
-let aa=3,ab=4,aMode='exp',aAnim=0,aLock=false;
+let aa=3,ab=4,aMode='quiz',aAnim=0,aLock=false;
 function renderAdd(animate,done){
   aAnim++;const id=aAnim;
   const board=$('aBoard');board.innerHTML='';
@@ -493,7 +496,7 @@ $('aExp').addEventListener('click',()=>setAMode('exp'));
 $('aQuiz').addEventListener('click',()=>setAMode('quiz'));
 
 /* ==================== ODEJMOWANIE ==================== */
-let sm=7,sz=3,sMode='exp',sAnim=0,sLock=false;
+let sm=7,sz=3,sMode='quiz',sAnim=0,sLock=false;
 function renderSub(animate,preGone,done){
   sAnim++;const id=sAnim;
   const board=$('sBoard');board.innerHTML='';
@@ -565,16 +568,16 @@ $('sQuiz').addEventListener('click',()=>setSMode('quiz'));
 
 /* ==================== KWADRAT ==================== */
 const N=10;
-let gMAX=5,gMode='exp',numMode='count',gTarget=null,gAnim=0,gLock=false,gLast=null;
+let gMAX=5,gMode='quiz',numMode='count',gTarget=null,gAnim=0,gLock=false,gLast=null;
 function buildGrid(){
   const grid=$('grid');grid.innerHTML='';
   grid.style.gridTemplateColumns='repeat('+(N+1)+',1fr)';
   grid.appendChild(document.createElement('div'));
   for(let c=1;c<=N;c++){
-    const h=document.createElement('div');h.className='hd';h.textContent=c;grid.appendChild(h);
+    const h=document.createElement('div');h.className='hd';h.textContent=c;h.dataset.ch=c;grid.appendChild(h);
   }
   for(let r=1;r<=N;r++){
-    const h=document.createElement('div');h.className='hd';h.textContent=r;grid.appendChild(h);
+    const h=document.createElement('div');h.className='hd';h.textContent=r;h.dataset.rh=r;grid.appendChild(h);
     for(let c=1;c<=N;c++){
       const d=document.createElement('div');
       d.className='cell';d.dataset.r=r;d.dataset.c=c;
@@ -642,18 +645,38 @@ function gPick(r,c){
     }
   }
 }
+function gPackets(a,b){
+  const board=$('gBoard');board.innerHTML='';
+  for(let i=0;i<a;i++){
+    const bk=makeBasket(board,i,b,false);
+    bk.badge.style.opacity=1;bk.badge.textContent=(i+1)*b;
+  }
+}
+function gMarkHeaders(a,b){
+  $('grid').querySelectorAll('.hd').forEach(h=>h.classList.remove('mark'));
+  if(a==null)return;
+  const set=new Set([a,b]);
+  $('grid').querySelectorAll('.hd').forEach(h=>{
+    const v=h.dataset.ch||h.dataset.rh;
+    if(v&&set.has(+v))h.classList.add('mark');
+  });
+}
+function gClearAids(){$('gBoard').innerHTML='';gMarkHeaders(null)}
+function gExploreReset(){gClear();gClearAids();$('gEq').textContent='Kliknij pole!';$('gHint').textContent=''}
 function gQuizNext(){
   const a=1+Math.floor(Math.random()*gMAX),b=1+Math.floor(Math.random()*gMAX);
   gTarget=[a,b];gClear();
+  gPackets(a,b);
+  gMarkHeaders(a,b);
   $('gEq').innerHTML=eqHTML(a,'×',b,null);
-  $('gHint').textContent='Kliknij pole: '+a+' '+pl(a,['rząd','rzędy','rzędów'])+' i '+b+' w rzędzie';
+  $('gHint').textContent='Tyle: '+a+' '+pl(a,['pakiet','pakiety','pakietów'])+' po '+b+'. Znajdź to pole na tabliczce!';
 }
 function setGMode(m){
   gMode=m;gAnim++;
   $('gExp').classList.toggle('on',m==='exp');
   $('gQuiz').classList.toggle('on',m==='quiz');
   if(m==='quiz')gQuizNext();
-  else{gClear();$('gEq').textContent='Kliknij pole!';$('gHint').textContent=''}
+  else gExploreReset();
 }
 $('gExp').addEventListener('click',()=>setGMode('exp'));
 $('gQuiz').addEventListener('click',()=>setGMode('quiz'));
@@ -677,7 +700,7 @@ $('gNum').addEventListener('click',()=>{
 $('starN').textContent=stars;
 markTheme();
 buildGrid();
-kExplore();
+kQuizNext();
 </script>
 </body>
 </html>
