@@ -633,14 +633,10 @@ function gPick(r,c){
   $('gHint').textContent=gWords(r,c);
   gShow(r,c);
 }
-/* cichy prostokąt-obrazek pola: koloruje blok a×b, bez liczb */
+/* cichy prostokąt-obrazek pola: koloruje blok a×b, cały rząd jednym kolorem, bez liczb */
 function gRect(a,b){
   gCells((d,r,c)=>{
-    if(r<=a&&c<=b){
-      const P=RAMPS[(r-1)%RAMPS.length];
-      d.style.background=c===b?P.m:P.l;
-      if(c===b)d.classList.add('last');
-    }
+    if(r<=a&&c<=b)d.style.background=RAMPS[(r-1)%RAMPS.length].m;
   });
 }
 function gGuideClear(){
