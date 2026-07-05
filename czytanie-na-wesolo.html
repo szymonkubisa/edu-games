@@ -113,10 +113,17 @@ a.home:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
   margin:6px 0 12px;
 }
 #cJudge .opt{font-size:clamp(19px,4.5vw,24px)}
-#cGood{border-color:var(--green);background:var(--green-l);color:#2E6B10;box-shadow:0 3px 0 var(--green)}
-#cGood:active{box-shadow:0 1px 0 var(--green)}
-#cBad{border-color:var(--sun);background:var(--sun-l);color:#8A5A0A;box-shadow:0 3px 0 var(--sun)}
-#cBad:active{box-shadow:0 1px 0 var(--sun)}
+#cGood,#fGood{border-color:var(--green);background:var(--green-l);color:#2E6B10;box-shadow:0 3px 0 var(--green)}
+#cGood:active,#fGood:active{box-shadow:0 1px 0 var(--green)}
+#cBad,#fNew{border-color:var(--sun);background:var(--sun-l);color:#8A5A0A;box-shadow:0 3px 0 var(--sun)}
+#cBad:active,#fNew:active{box-shadow:0 1px 0 var(--sun)}
+
+/* ---- śmieszne zdania ---- */
+#fSent{
+  font-size:clamp(24px,6vw,40px);font-weight:700;text-align:center;line-height:1.4;
+  min-height:120px;display:flex;align-items:center;justify-content:center;margin:6px 0 12px;
+}
+#fJudge .opt{font-size:clamp(18px,4.2vw,23px)}
 
 /* ---- konfetti ---- */
 .cf{position:fixed;top:-40px;font-size:26px;pointer-events:none;z-index:9;animation:fall linear forwards}
@@ -139,6 +146,7 @@ a.home:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
   <button id="tStory" class="on">📖 Historyjka</button>
   <button id="tWords">🔤 Słowa</button>
   <button id="tCards">🗣️ Czytam</button>
+  <button id="tFun">😄 Śmieszne</button>
 </div>
 
 <!-- ===== WYBÓR ===== -->
@@ -200,6 +208,20 @@ a.home:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
   </div>
   <div class="fb" id="cFb" style="text-align:center"></div>
 </div>
+
+<!-- ===== ŚMIESZNE ZDANIA ===== -->
+<div class="card hidden" id="pgFun">
+  <div class="q" id="fQ" style="text-align:center"></div>
+  <div id="fSent"></div>
+  <div style="display:flex;justify-content:center;margin-bottom:14px">
+    <button id="fListen"></button>
+  </div>
+  <div class="opts" id="fJudge">
+    <button class="opt" id="fGood"></button>
+    <button class="opt" id="fNew"></button>
+  </div>
+  <div class="fb" id="fFb" style="text-align:center"></div>
+</div>
 </div>
 
 <script src="store.js"></script>
@@ -248,7 +270,7 @@ function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 /* =============== DANE PL =============== */
 const PL={
  ui:{
-  title:'📖 Czytanie na wesoło', tabStory:'📖 Historyjka', tabWords:'🔤 Słowa', tabCards:'🗣️ Czytam',
+  title:'📖 Czytanie na wesoło', tabStory:'📖 Historyjka', tabWords:'🔤 Słowa', tabCards:'🗣️ Czytam', tabFun:'😄 Śmieszne',
   syl:'Sy-la-by',
   lblHero:'Kto jest bohaterem?', lblFriend:'Z kim?', lblPlace:'Gdzie?', lblThing:'Jaka rzecz?',
   go:'Zaczynamy! 🚀', read:'Przeczytałam! ➜', readLast:'Przeczytałam! 🌟',
@@ -257,6 +279,8 @@ const PL={
   wordsQ:'Co to jest? Wybierz słowo!',
   cardsQ:'Przeczytaj słowo na głos!', cListen:'🔊 Posłuchaj',
   cGood:'✅ Umiem!', cBad:'🤔 Jeszcze nie', cTry:'Nic nie szkodzi! 💪',
+  funQ:'Przeczytaj śmieszne zdanie na głos!', fListen:'🔊 Posłuchaj',
+  fGood:'✅ Przeczytałem!', fNew:'🎲 Inne zdanie',
   qHero:'Kto jest bo|ha|te|rem?', qPlace:'Gdzie to by|ło?', qThing:'Ja|ka rzecz by|ła w baj|ce?',
   sentence:(i,n)=>'Zdanie '+i+' z '+n
  },
@@ -296,6 +320,20 @@ const PL={
   {em:'⭐',w:'gwiaz|da'},{em:'❤️',w:'ser|ce'},{em:'🍎',w:'jabł|ko'},{em:'🍋',w:'cy|try|na'},
   {em:'🍌',w:'ba|nan'},{em:'⚽',w:'pił|ka'},{em:'🖍️',w:'kred|ka'},{em:'🌙',w:'księ|życ'},
  ],
+ FUN:{
+  subj:[
+   'Zie|lo|ny smok','Gru|by kot','Śmiesz|na ża|ba','Ma|ły słoń','Ta|ń|czą|cy pies',
+   'Nie|bie|ski je|dno|ro|żec','Gło|dny miś','La|ta|ją|ca so|wa','Ró|żo|wy kró|lik','Wiel|ki di|no|zaur'
+  ],
+  verb:[
+   'tań|czy','śpie|wa','ska|cze','je lo|dy','gra na trą|bce',
+   'ro|bi fi|koł|ki','pi|je sok','la|ta','śmie|je się','gwiż|dże'
+  ],
+  tail:[
+   'na da|chu','w wan|nie','na Księ|ży|cu','pod sto|łem','w ka|pe|lu|szu',
+   'na dro|dze','w kos|mo|sie','na huś|taw|ce','w og|ro|dzie','na lo|do|wi|sku'
+  ]
+ },
  stories(h,f,p,t){
   const hv=(m,x)=>h.g==='m'?m:x;           // bohater
   const fv=(m,x)=>f.g==='m'?m:x;           // przyjaciel
@@ -391,7 +429,7 @@ const PL={
 /* =============== DANE EN =============== */
 const EN={
  ui:{
-  title:'📖 Fun Reading', tabStory:'📖 Story', tabWords:'🔤 Words', tabCards:'🗣️ I read',
+  title:'📖 Fun Reading', tabStory:'📖 Story', tabWords:'🔤 Words', tabCards:'🗣️ I read', tabFun:'😄 Funny',
   syl:'Syl-la-bles',
   lblHero:'Who is the hero?', lblFriend:'With whom?', lblPlace:'Where?', lblThing:'What thing?',
   go:"Let's go! 🚀", read:'I read it! ➜', readLast:'I read it! 🌟',
@@ -400,6 +438,8 @@ const EN={
   wordsQ:'What is it? Pick the word!',
   cardsQ:'Read the word out loud!', cListen:'🔊 Listen',
   cGood:'✅ Got it!', cBad:'🤔 Not yet', cTry:'No worries! 💪',
+  funQ:'Read the funny sentence out loud!', fListen:'🔊 Listen',
+  fGood:'✅ I read it!', fNew:'🎲 Another one',
   qHero:'Who is the he|ro?', qPlace:'Where was it?', qThing:'What thing was in the sto|ry?',
   sentence:(i,n)=>'Sentence '+i+' of '+n
  },
@@ -439,6 +479,20 @@ const EN={
   {em:'❤️',w:'heart'},{em:'🍎',w:'ap|ple'},{em:'🍋',w:'lem|on'},{em:'🍌',w:'ba|na|na'},
   {em:'⚽',w:'ball'},{em:'🌙',w:'moon'},{em:'☀️',w:'sun'},{em:'🚢',w:'ship'},
  ],
+ FUN:{
+  subj:[
+   'A green drag|on','A fat cat','A si|lly frog','A ti|ny el|e|phant','A danc|ing dog',
+   'A blue u|ni|corn','A hun|gry bear','A fly|ing owl','A pink rab|bit','A big di|no|saur'
+  ],
+  verb:[
+   'danc|es','sings','jumps','eats ice cream','plays the trum|pet',
+   'does flips','drinks juice','flies','laughs','whis|tles'
+  ],
+  tail:[
+   'on the roof','in the bath|tub','on the Moon','un|der the ta|ble','in a hat',
+   'on the road','in space','on a swing','in the gar|den','at the sea'
+  ]
+ },
  stories(h,f,p,t){
   const He=h.g==='m'?'He':'She', he=h.g==='m'?'he':'she', him=h.g==='m'?'him':'her';
   const fshe=f.g==='m'?'he':'she';
@@ -547,6 +601,11 @@ function applyUI(){
   $('cListen').textContent=u.cListen;
   $('cGood').textContent=u.cGood;
   $('cBad').textContent=u.cBad;
+  $('tFun').textContent=u.tabFun;
+  $('fQ').textContent=u.funQ;
+  $('fListen').textContent=u.fListen;
+  $('fGood').textContent=u.fGood;
+  $('fNew').textContent=u.fNew;
   $('bSyl').textContent=u.syl;
   $('lblHero').textContent=u.lblHero;
   $('lblFriend').textContent=u.lblFriend;
@@ -750,14 +809,41 @@ $('cBad').addEventListener('click',()=>{
   setTimeout(cardNext,1400);
 });
 
+/* =============== ŚMIESZNE ZDANIA =============== */
+let fCur=null,fLock=false;
+function makeFun(){
+  const F=D().FUN,p=a=>a[Math.floor(Math.random()*a.length)];
+  return p(F.subj)+' '+p(F.verb)+' '+p(F.tail)+'!';
+}
+function funNext(){
+  fLock=false;$('fFb').textContent='';
+  let s;do{s=makeFun()}while(s===fCur);
+  fCur=s;
+  const el=$('fSent');el.innerHTML=render(fCur);
+  el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+}
+$('fListen').addEventListener('click',()=>say(fCur));
+$('fGood').addEventListener('click',()=>{
+  if(fLock)return;fLock=true;
+  $('fGood').classList.add('pop');goodS();
+  stars=EduStore.addStar('reading').count;bumpStars();
+  $('fFb').textContent=UI().bravo;
+  setTimeout(()=>{$('fGood').classList.remove('pop');funNext();},1100);
+});
+$('fNew').addEventListener('click',()=>{
+  if(fLock)return;
+  popS();funNext();
+});
+
 /* =============== NAWIGACJA =============== */
-const PAGES=['pgPick','pgStory','pgQuiz','pgEnd','pgWords','pgCards'];
-const SIDE=['pgWords','pgCards'];
+const PAGES=['pgPick','pgStory','pgQuiz','pgEnd','pgWords','pgCards','pgFun'];
+const SIDE=['pgWords','pgCards','pgFun'];
 let storyPage='pgPick';
 function setTab(which){
   $('tStory').classList.toggle('on',which==='story');
   $('tWords').classList.toggle('on',which==='words');
   $('tCards').classList.toggle('on',which==='cards');
+  $('tFun').classList.toggle('on',which==='fun');
 }
 function show(id){
   if(!SIDE.includes(id))storyPage=id;
@@ -777,6 +863,11 @@ $('tCards').addEventListener('click',()=>{
   cardNext();
   show('pgCards');
 });
+$('tFun').addEventListener('click',()=>{
+  setTab('fun');
+  funNext();
+  show('pgFun');
+});
 
 /* =============== PRZEŁĄCZNIKI =============== */
 $('bSyl').addEventListener('click',()=>{
@@ -789,6 +880,7 @@ $('bSyl').addEventListener('click',()=>{
   if(!$('pgQuiz').classList.contains('hidden'))quiz();
   if(!$('pgWords').classList.contains('hidden'))wordRound();
   if(!$('pgCards').classList.contains('hidden')&&cCur)$('cWord').innerHTML=render(cCur.w);
+  if(!$('pgFun').classList.contains('hidden')&&fCur)$('fSent').innerHTML=render(fCur);
 });
 $('bSnd').addEventListener('click',()=>{
   snd=!snd;EduStore.set('sound',snd);$('bSnd').textContent=snd?'🔊':'🔇';
@@ -799,11 +891,13 @@ $('bLang').addEventListener('click',()=>{
   popS();
   const onWords=!$('pgWords').classList.contains('hidden');
   const onCards=!$('pgCards').classList.contains('hidden');
+  const onFun=!$('pgFun').classList.contains('hidden');
   applyUI();
   buildChips();
   resetPick();
   if(onWords){setTab('words');wordRound();show('pgWords');}
   else if(onCards){setTab('cards');cSeq=[];cPos=0;cardNext();show('pgCards');}
+  else if(onFun){setTab('fun');funNext();show('pgFun');}
 });
 
 /* =============== START =============== */
