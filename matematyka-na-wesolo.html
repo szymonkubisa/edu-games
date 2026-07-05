@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matematyka na wesoło</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#3B2E58; --bg:#F6F1FF; --card:#FFFFFF;
+  --teal:#2BB58A; --teal-l:#DDF5EC;
+  --coral:#F4764C; --coral-l:#FDE7DE;
+  --sun:#F0A11F; --sun-l:#FCEFD6;
+  --pink:#EE6FA4; --pink-l:#FCE3EE;
+  --violet:#8B7BE8; --violet-l:#EBE7FC;
+  --red:#E24B4A; --red-l:#FADCDC;
+  --green:#5CB531;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:"Baloo 2","Comic Sans MS","Chalkboard SE",ui-rounded,system-ui,sans-serif;
+  background:var(--bg); color:var(--ink);
+  min-height:100vh; padding:16px;
+}
+.wrap{max-width:760px;margin:0 auto}
+header{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+h1{font-size:clamp(22px,5vw,30px);font-weight:700;flex:1;min-width:200px}
+.stars{
+  display:flex;align-items:center;gap:6px;font-size:22px;font-weight:700;
+  background:var(--sun-l);border:3px solid var(--sun);border-radius:999px;padding:4px 16px;color:#8A5A0A;
+}
+button{
+  font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);
+  background:var(--card);border:3px solid var(--ink);border-radius:16px;
+  padding:8px 16px;cursor:pointer;
+  box-shadow:0 4px 0 var(--ink);
+  transition:transform .08s,box-shadow .08s;
+  user-select:none;
+}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+button.on{background:var(--violet-l);border-color:var(--violet);box-shadow:0 4px 0 var(--violet);color:#4A3DB0}
+button.on:active{box-shadow:0 1px 0 var(--violet)}
+button:focus-visible{outline:3px dashed var(--violet);outline-offset:3px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{font-size:17px;padding:9px 16px}
+.themes{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.icon-btn{width:44px;height:44px;padding:0;font-size:20px;display:inline-flex;align-items:center;justify-content:center}
+a.home{
+  text-decoration:none;color:var(--ink);flex:none;
+  background:var(--card);border:3px solid var(--ink);border-radius:16px;
+  box-shadow:0 4px 0 var(--ink);cursor:pointer;
+}
+a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.panel{background:var(--card);border:3px solid var(--ink);border-radius:24px;padding:18px;box-shadow:0 6px 0 rgba(59,46,88,.18)}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.eq{font-size:clamp(28px,7vw,40px);font-weight:700;min-height:52px;margin:6px 0 2px}
+.eq .a{color:var(--teal)} .eq .b{color:var(--coral)} .eq .c{color:var(--violet)} .eq .ok{color:var(--green)} .eq .bad{color:var(--red)}
+.hint{font-size:16px;min-height:26px;margin-bottom:12px;color:#6B5E8E}
+.ctl{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper .lbl{font-size:15px;font-weight:700;color:#6B5E8E}
+.stepper .val{font-size:28px;font-weight:700;min-width:34px;text-align:center}
+.stepper .val.g{color:var(--teal)} .stepper .val.k{color:var(--coral)}
+.stepper button{width:48px;height:48px;font-size:24px;padding:0;border-radius:14px}
+.board{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px;align-items:center}
+.opSign{font-size:40px;font-weight:700;color:#6B5E8E;padding:0 4px}
+.basket{border-radius:18px;padding:12px;position:relative;border:3px solid transparent}
+.basket .items{display:grid;gap:4px;justify-content:center}
+.basket .badge{
+  position:absolute;right:-8px;bottom:-8px;color:#fff;font-size:14px;font-weight:700;
+  border-radius:999px;padding:2px 10px;opacity:0;border:2px solid #fff;
+}
+.item{font-size:30px;line-height:38px;text-align:center;opacity:0;transition:opacity .2s,transform .2s,filter .2s}
+.item.shown{opacity:1}
+.item.gone{opacity:.18;filter:grayscale(1);transform:scale(.65)}
+.ans{display:flex;gap:14px;flex-wrap:wrap}
+.ans button{font-size:26px;padding:10px 30px;border-radius:18px}
+.ans button.bad{border-color:var(--red);box-shadow:0 4px 0 var(--red);color:var(--red)}
+.grid{display:grid;gap:4px;max-width:600px;user-select:none;margin-bottom:6px}
+.cell,.hd{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:clamp(11px,2.4vw,15px);font-weight:700}
+.hd{color:#6B5E8E}
+.cell{background:var(--bg);cursor:pointer}
+.cell.last{color:#fff}
+.hidden{display:none}
+@keyframes pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.25);opacity:1}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .3s ease-out both}
+@keyframes wob{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.wob{animation:wob .5s ease-in-out}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shk{animation:shk .28s ease-in-out 2}
+.confetti{position:fixed;top:-40px;font-size:26px;pointer-events:none;z-index:99;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .item{opacity:1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="icon-btn home" href="index.html" aria-label="Menu">🏠</a>
+    <h1>Matematyka na wesoło</h1>
+    <div class="stars" id="starBox">⭐ <span id="starN">0</span></div>
+    <button class="icon-btn" id="sndBtn" aria-label="Dźwięk">🔊</button>
+  </header>
+
+  <div class="themes" id="themes"></div>
+
+  <div class="tabs">
+    <button data-tab="A" >➕ Dodawanie</button>
+    <button data-tab="S" >➖ Odejmowanie</button>
+    <button data-tab="K" class="on">✖️ Mnożenie</button>
+    <button data-tab="G" >🟪 Kwadrat</button>
+  </div>
+
+  <!-- ============ MNOŻENIE (koszyki) ============ -->
+  <section id="secK" class="panel">
+    <div class="bar">
+      <button id="kExp" class="on">🔎 Odkrywaj</button>
+      <button id="kQuiz">⭐ Zagadka</button>
+    </div>
+    <div class="ctl" id="kCtl">
+      <div class="stepper">
+        <span class="lbl">Koszyki</span>
+        <button data-t="g" data-d="-1" aria-label="Mniej koszyków">−</button>
+        <span class="val g" id="gV">3</span>
+        <button data-t="g" data-d="1" aria-label="Więcej koszyków">+</button>
+      </div>
+      <div class="stepper">
+        <span class="lbl">W koszyku</span>
+        <button data-t="k" data-d="-1" aria-label="Mniej w koszyku">−</button>
+        <span class="val k" id="kV">4</span>
+        <button data-t="k" data-d="1" aria-label="Więcej w koszyku">+</button>
+      </div>
+    </div>
+    <div class="eq" id="kEq"></div>
+    <div class="hint" id="kHint"></div>
+    <div class="board" id="kBoard"></div>
+    <div class="ans" id="kAns"></div>
+  </section>
+
+  <!-- ============ KWADRAT ============ -->
+  <section id="secG" class="panel hidden">
+    <div class="bar">
+      <button id="gExp" class="on">🔎 Odkrywaj</button>
+      <button id="gQuiz">⭐ Zagadka</button>
+      <button id="gNum">Licz: 1,2,3…</button>
+      <button id="gMax">Do 5</button>
+    </div>
+    <div class="eq" id="gEq">Kliknij pole!</div>
+    <div class="hint" id="gHint"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- ============ DODAWANIE ============ -->
+  <section id="secA" class="panel hidden">
+    <div class="bar">
+      <button id="aExp" class="on">🔎 Odkrywaj</button>
+      <button id="aQuiz">⭐ Zagadka</button>
+    </div>
+    <div class="ctl" id="aCtl">
+      <div class="stepper">
+        <span class="lbl">Pierwszy koszyk</span>
+        <button data-t="a" data-d="-1" aria-label="Mniej w pierwszym">−</button>
+        <span class="val g" id="aV">3</span>
+        <button data-t="a" data-d="1" aria-label="Więcej w pierwszym">+</button>
+      </div>
+      <div class="stepper">
+        <span class="lbl">Drugi koszyk</span>
+        <button data-t="b" data-d="-1" aria-label="Mniej w drugim">−</button>
+        <span class="val k" id="bV">4</span>
+        <button data-t="b" data-d="1" aria-label="Więcej w drugim">+</button>
+      </div>
+    </div>
+    <div class="eq" id="aEq"></div>
+    <div class="hint" id="aHint"></div>
+    <div class="board" id="aBoard"></div>
+    <div class="ans" id="aAns"></div>
+  </section>
+
+  <!-- ============ ODEJMOWANIE ============ -->
+  <section id="secS" class="panel hidden">
+    <div class="bar">
+      <button id="sExp" class="on">🔎 Odkrywaj</button>
+      <button id="sQuiz">⭐ Zagadka</button>
+    </div>
+    <div class="ctl" id="sCtl">
+      <div class="stepper">
+        <span class="lbl">Mamy</span>
+        <button data-t="m" data-d="-1" aria-label="Mniej mamy">−</button>
+        <span class="val g" id="mV">7</span>
+        <button data-t="m" data-d="1" aria-label="Więcej mamy">+</button>
+      </div>
+      <div class="stepper">
+        <span class="lbl">Zabieramy</span>
+        <button data-t="z" data-d="-1" aria-label="Mniej zabieramy">−</button>
+        <span class="val k" id="zV">3</span>
+        <button data-t="z" data-d="1" aria-label="Więcej zabieramy">+</button>
+      </div>
+    </div>
+    <div class="eq" id="sEq"></div>
+    <div class="hint" id="sHint"></div>
+    <div class="board" id="sBoard"></div>
+    <div class="ans" id="sAns"></div>
+  </section>
+</div>
+
+<script src="store.js"></script>
+<script>
+/* ---------- wspólne ---------- */
+const $=id=>document.getElementById(id);
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let stars=EduStore.stars('math'),snd=EduStore.get('sound',true),AC=null;
+const RAMPS=[
+  {l:'var(--teal-l)',m:'var(--teal)'},
+  {l:'var(--coral-l)',m:'var(--coral)'},
+  {l:'var(--violet-l)',m:'var(--violet)'},
+  {l:'var(--sun-l)',m:'var(--sun)'},
+  {l:'var(--pink-l)',m:'var(--pink)'}
+];
+const THEMES={
+  cookie:{em:'🍪',f:['ciastko','ciastka','ciastek']},
+  apple:{em:'🍎',f:['jabłko','jabłka','jabłek']},
+  star:{em:'⭐',f:['gwiazdka','gwiazdki','gwiazdek']},
+  heart:{em:'💜',f:['serduszko','serduszka','serduszek']},
+  flower:{em:'🌸',f:['kwiatek','kwiatki','kwiatków']},
+  rainbow:{em:'🌈',f:['tęcza','tęcze','tęcz']},
+  unicorn:{em:'🦄',f:['jednorożec','jednorożce','jednorożców']},
+  crystal:{em:'💎',f:['kryształ','kryształy','kryształów']},
+  marble:{em:'🔵',f:['kulka','kulki','kulek']}
+};
+let theme=EduStore.get('mathTheme','unicorn');
+if(!THEMES[theme])theme='unicorn';
+function T(){return THEMES[theme]}
+function pl(n,f){if(n===1)return f[0];if(n%10>=2&&n%10<=4&&(n%100<10||n%100>=20))return f[1];return f[2]}
+function tone(freq,vol,dur){
+  if(!snd)return;
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(),g=AC.createGain();
+    o.type='sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(vol,AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+dur);
+    o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+dur+.01);
+  }catch(e){}
+}
+const blipUp=i=>tone(Math.min(320+i*26,1300),.09,.13);
+const blipDown=i=>tone(Math.max(180,640-i*55),.09,.15);
+function fanfare(){[440,554,659,880].forEach((f,i)=>setTimeout(()=>tone(f,.1,.25),i*110))}
+function confetti(){
+  if(REDUCED)return;
+  const em=['🎉','⭐','🌟','🎈','✨',T().em];
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');
+    d.className='confetti';
+    d.textContent=em[Math.floor(Math.random()*em.length)];
+    d.style.left=Math.random()*100+'vw';
+    d.style.animationDuration=(1.6+Math.random()*1.4)+'s';
+    d.style.animationDelay=(Math.random()*.4)+'s';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),3600);
+  }
+}
+function addStar(){
+  stars=EduStore.addStar('math').count;
+  $('starN').textContent=stars;
+  const b=$('starBox');
+  b.classList.remove('wob');void b.offsetWidth;b.classList.add('wob');
+  fanfare();confetti();
+}
+$('sndBtn').textContent=snd?'🔊':'🔇';
+$('sndBtn').addEventListener('click',()=>{snd=!snd;EduStore.set('sound',snd);$('sndBtn').textContent=snd?'🔊':'🔇'});
+function eqHTML(a,op,b,v,bravo){
+  return '<span class="a">'+a+'</span> '+op+' <span class="b">'+b+'</span> = <span class="c">'+(v==null?'?':v)+'</span>'+(bravo?' <span class="ok">Brawo!</span>':'');
+}
+function makeBasket(parent,rampIdx,count,animate){
+  const P=RAMPS[rampIdx%RAMPS.length];
+  const card=document.createElement('div');
+  card.className='basket';
+  card.style.background=P.l;card.style.borderColor=P.m;
+  const inner=document.createElement('div');
+  inner.className='items';
+  inner.style.gridTemplateColumns='repeat('+Math.min(count,5)+',38px)';
+  card.appendChild(inner);
+  const badge=document.createElement('div');
+  badge.className='badge';badge.style.background=P.m;
+  card.appendChild(badge);
+  parent.appendChild(card);
+  const items=[];
+  for(let j=0;j<count;j++){
+    const it=document.createElement('div');
+    it.className='item'+(animate&&!REDUCED?'':' shown');
+    it.textContent=T().em;
+    inner.appendChild(it);items.push(it);
+  }
+  return {card,badge,items,P};
+}
+function makeAnswers(container,correct,onCorrect,wrongHint){
+  container.innerHTML='';
+  const opts=new Set([correct]);
+  while(opts.size<3){
+    const d=correct+[1,-1,2,-2,3,-3][Math.floor(Math.random()*6)];
+    if(d>=0)opts.add(d);
+  }
+  [...opts].sort(()=>Math.random()-.5).forEach(v=>{
+    const b=document.createElement('button');
+    b.textContent=v;
+    b.addEventListener('click',()=>{
+      if(v===correct)onCorrect();
+      else{b.classList.add('shk','bad');wrongHint()}
+    });
+    container.appendChild(b);
+  });
+}
+
+/* ---------- zakładki ---------- */
+let curTab='K';
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    curTab=b.dataset.tab;
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+    ['K','G','A','S'].forEach(t=>$('sec'+t).classList.toggle('hidden',t!==curTab));
+    refresh();
+  });
+});
+function refresh(){
+  if(curTab==='K')kMode==='exp'?kExplore():kQuizNext();
+  else if(curTab==='A')aMode==='exp'?aExplore():aQuizNext();
+  else if(curTab==='S')sMode==='exp'?sExplore():sQuizNext();
+}
+
+/* ---------- motywy ---------- */
+const th=$('themes');
+Object.keys(THEMES).forEach(key=>{
+  const b=document.createElement('button');
+  b.className='icon-btn';
+  b.textContent=THEMES[key].em;
+  b.setAttribute('aria-label',THEMES[key].f[0]);
+  b.dataset.k=key;
+  b.addEventListener('click',()=>{theme=key;EduStore.set('mathTheme',theme);markTheme();refresh()});
+  th.appendChild(b);
+});
+function markTheme(){
+  th.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===theme));
+}
+
+/* ==================== MNOŻENIE ==================== */
+let kg=3,kk=4,kMode='exp',kAnim=0,kLock=false;
+function kosz(n){return pl(n,['koszyk','koszyki','koszyków'])}
+function renderMul(animate,done){
+  kAnim++;const id=kAnim;
+  const board=$('kBoard');board.innerHTML='';
+  const slots=[];
+  for(let i=0;i<kg;i++){
+    const b=makeBasket(board,i,kk,animate);
+    b.items.forEach((it,j)=>slots.push({it,badge:b.badge,i,j}));
+  }
+  if(!animate||REDUCED){
+    slots.forEach(s=>{
+      s.it.classList.add('shown');
+      if(s.j===kk-1){s.badge.style.opacity=1;s.badge.textContent=(s.i+1)*kk}
+    });
+    if(done)done();return;
+  }
+  const total=kg*kk,delay=Math.min(110,Math.max(28,2400/total));
+  slots.forEach((s,idx)=>{
+    setTimeout(()=>{
+      if(id!==kAnim)return;
+      s.it.classList.add('shown','pop');
+      blipUp(idx+1);
+      $('kEq').innerHTML=eqHTML(kg,'×',kk,idx+1);
+      if(s.j===kk-1){s.badge.style.opacity=1;s.badge.textContent=(s.i+1)*kk}
+      if(idx===total-1&&done)done();
+    },idx*delay);
+  });
+}
+function kExplore(){
+  $('kEq').innerHTML=eqHTML(kg,'×',kk,null);
+  $('kHint').textContent='';$('kAns').innerHTML='';
+  renderMul(true,()=>{
+    $('kHint').textContent=kg+' '+kosz(kg)+' po '+kk+' '+pl(kk,T().f)+' to razem '+(kg*kk)+' '+pl(kg*kk,T().f)+'!';
+  });
+}
+function kQuizNext(){
+  kLock=false;
+  kg=2+Math.floor(Math.random()*4);kk=2+Math.floor(Math.random()*4);
+  $('gV').textContent=kg;$('kV').textContent=kk;
+  $('kEq').innerHTML=eqHTML(kg,'×',kk,null);
+  $('kHint').textContent='Ile jest razem? Policz i kliknij odpowiedź!';
+  renderMul(false);
+  makeAnswers($('kAns'),kg*kk,()=>{
+    if(kLock)return;kLock=true;$('kAns').innerHTML='';
+    $('kHint').textContent='Sprawdźmy — policzmy razem!';
+    renderMul(true,()=>{
+      $('kEq').innerHTML=eqHTML(kg,'×',kk,kg*kk,true);
+      $('kHint').textContent='Masz gwiazdkę!';
+      addStar();setTimeout(kQuizNext,2200);
+    });
+  },()=>{$('kHint').textContent='Prawie! Policz jeszcze raz — po '+kk+' w każdym koszyku.'});
+}
+document.querySelectorAll('#kCtl button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    if(kMode!=='exp')return;
+    const d=+b.dataset.d;
+    if(b.dataset.t==='g')kg=Math.min(10,Math.max(1,kg+d));
+    else kk=Math.min(10,Math.max(1,kk+d));
+    $('gV').textContent=kg;$('kV').textContent=kk;
+    kExplore();
+  });
+});
+function setKMode(m){
+  kMode=m;kAnim++;
+  $('kExp').classList.toggle('on',m==='exp');
+  $('kQuiz').classList.toggle('on',m==='quiz');
+  $('kCtl').style.opacity=m==='exp'?1:.4;
+  m==='exp'?kExplore():kQuizNext();
+}
+$('kExp').addEventListener('click',()=>setKMode('exp'));
+$('kQuiz').addEventListener('click',()=>setKMode('quiz'));
+
+/* ==================== DODAWANIE ==================== */
+let aa=3,ab=4,aMode='exp',aAnim=0,aLock=false;
+function renderAdd(animate,done){
+  aAnim++;const id=aAnim;
+  const board=$('aBoard');board.innerHTML='';
+  const b1=makeBasket(board,0,aa,animate);
+  const plus=document.createElement('div');plus.className='opSign';plus.textContent='+';
+  board.appendChild(plus);
+  const b2=makeBasket(board,1,ab,animate);
+  const slots=[
+    ...b1.items.map((it,j)=>({it,badge:b1.badge,end:j===aa-1,sum:aa})),
+    ...b2.items.map((it,j)=>({it,badge:b2.badge,end:j===ab-1,sum:ab}))
+  ];
+  if(!animate||REDUCED){
+    slots.forEach(s=>{s.it.classList.add('shown');if(s.end){s.badge.style.opacity=1;s.badge.textContent=s.sum}});
+    if(done)done();return;
+  }
+  const total=aa+ab,delay=Math.min(160,Math.max(60,2600/total));
+  slots.forEach((s,idx)=>{
+    setTimeout(()=>{
+      if(id!==aAnim)return;
+      s.it.classList.add('shown','pop');
+      blipUp(idx+1);
+      $('aEq').innerHTML=eqHTML(aa,'+',ab,idx+1);
+      if(s.end){s.badge.style.opacity=1;s.badge.textContent=s.sum}
+      if(idx===total-1&&done)done();
+    },idx*delay);
+  });
+}
+function aExplore(){
+  $('aEq').innerHTML=eqHTML(aa,'+',ab,null);
+  $('aHint').textContent='';$('aAns').innerHTML='';
+  renderAdd(true,()=>{
+    $('aHint').textContent=aa+' '+pl(aa,T().f)+' i jeszcze '+ab+' — razem '+(aa+ab)+' '+pl(aa+ab,T().f)+'!';
+  });
+}
+function aQuizNext(){
+  aLock=false;
+  aa=2+Math.floor(Math.random()*5);ab=2+Math.floor(Math.random()*5);
+  $('aV').textContent=aa;$('bV').textContent=ab;
+  $('aEq').innerHTML=eqHTML(aa,'+',ab,null);
+  $('aHint').textContent='Ile jest razem?';
+  renderAdd(false);
+  makeAnswers($('aAns'),aa+ab,()=>{
+    if(aLock)return;aLock=true;$('aAns').innerHTML='';
+    $('aHint').textContent='Policzmy razem!';
+    renderAdd(true,()=>{
+      $('aEq').innerHTML=eqHTML(aa,'+',ab,aa+ab,true);
+      $('aHint').textContent='Masz gwiazdkę!';
+      addStar();setTimeout(aQuizNext,2200);
+    });
+  },()=>{$('aHint').textContent='Prawie! Policz najpierw pierwszy koszyk, potem licz dalej.'});
+}
+document.querySelectorAll('#aCtl button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    if(aMode!=='exp')return;
+    const d=+b.dataset.d;
+    if(b.dataset.t==='a')aa=Math.min(10,Math.max(1,aa+d));
+    else ab=Math.min(10,Math.max(1,ab+d));
+    $('aV').textContent=aa;$('bV').textContent=ab;
+    aExplore();
+  });
+});
+function setAMode(m){
+  aMode=m;aAnim++;
+  $('aExp').classList.toggle('on',m==='exp');
+  $('aQuiz').classList.toggle('on',m==='quiz');
+  $('aCtl').style.opacity=m==='exp'?1:.4;
+  m==='exp'?aExplore():aQuizNext();
+}
+$('aExp').addEventListener('click',()=>setAMode('exp'));
+$('aQuiz').addEventListener('click',()=>setAMode('quiz'));
+
+/* ==================== ODEJMOWANIE ==================== */
+let sm=7,sz=3,sMode='exp',sAnim=0,sLock=false;
+function renderSub(animate,preGone,done){
+  sAnim++;const id=sAnim;
+  const board=$('sBoard');board.innerHTML='';
+  const b=makeBasket(board,2,sm,false);
+  b.items.forEach(it=>it.classList.add('shown'));
+  b.badge.style.opacity=1;b.badge.textContent=sm;
+  if(preGone){
+    for(let i=0;i<sz;i++)b.items[sm-1-i].classList.add('gone');
+    b.badge.textContent=sm-sz;
+    if(done)done();return;
+  }
+  if(!animate||REDUCED){if(done)done();return}
+  for(let i=1;i<=sz;i++){
+    setTimeout(()=>{
+      if(id!==sAnim)return;
+      b.items[sm-i].classList.add('gone');
+      blipDown(i);
+      $('sEq').innerHTML=eqHTML(sm,'−',i,sm-i);
+      b.badge.textContent=sm-i;
+      if(i===sz&&done)done();
+    },600+i*550);
+  }
+  if(sz===0&&done)setTimeout(done,600);
+}
+function sExplore(){
+  $('sEq').innerHTML=eqHTML(sm,'−',sz,null);
+  $('sHint').textContent='Patrz, co znika!';
+  $('sAns').innerHTML='';
+  renderSub(true,false,()=>{
+    $('sEq').innerHTML=eqHTML(sm,'−',sz,sm-sz);
+    $('sHint').textContent='Mamy '+sm+' '+pl(sm,T().f)+', zabieramy '+sz+'. Zostaje: '+(sm-sz)+' '+pl(sm-sz,T().f)+'!';
+  });
+}
+function sQuizNext(){
+  sLock=false;
+  sm=4+Math.floor(Math.random()*6);
+  sz=1+Math.floor(Math.random()*(sm-1));
+  $('mV').textContent=sm;$('zV').textContent=sz;
+  $('sEq').innerHTML=eqHTML(sm,'−',sz,null);
+  $('sHint').textContent='Ile zostało? Szare już zabrane!';
+  renderSub(false,true);
+  makeAnswers($('sAns'),sm-sz,()=>{
+    if(sLock)return;sLock=true;$('sAns').innerHTML='';
+    $('sEq').innerHTML=eqHTML(sm,'−',sz,sm-sz,true);
+    $('sHint').textContent='Masz gwiazdkę!';
+    addStar();setTimeout(sQuizNext,2200);
+  },()=>{$('sHint').textContent='Prawie! Policz tylko kolorowe — szare są zabrane.'});
+}
+document.querySelectorAll('#sCtl button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    if(sMode!=='exp')return;
+    const d=+b.dataset.d;
+    if(b.dataset.t==='m')sm=Math.min(10,Math.max(1,sm+d));
+    else sz=Math.min(sm,Math.max(0,sz+d));
+    if(sz>sm)sz=sm;
+    $('mV').textContent=sm;$('zV').textContent=sz;
+    sExplore();
+  });
+});
+function setSMode(m){
+  sMode=m;sAnim++;
+  $('sExp').classList.toggle('on',m==='exp');
+  $('sQuiz').classList.toggle('on',m==='quiz');
+  $('sCtl').style.opacity=m==='exp'?1:.4;
+  m==='exp'?sExplore():sQuizNext();
+}
+$('sExp').addEventListener('click',()=>setSMode('exp'));
+$('sQuiz').addEventListener('click',()=>setSMode('quiz'));
+
+/* ==================== KWADRAT ==================== */
+const N=10;
+let gMAX=5,gMode='exp',numMode='count',gTarget=null,gAnim=0,gLock=false,gLast=null;
+function buildGrid(){
+  const grid=$('grid');grid.innerHTML='';
+  grid.style.gridTemplateColumns='repeat('+(N+1)+',1fr)';
+  grid.appendChild(document.createElement('div'));
+  for(let c=1;c<=N;c++){
+    const h=document.createElement('div');h.className='hd';h.textContent=c;grid.appendChild(h);
+  }
+  for(let r=1;r<=N;r++){
+    const h=document.createElement('div');h.className='hd';h.textContent=r;grid.appendChild(h);
+    for(let c=1;c<=N;c++){
+      const d=document.createElement('div');
+      d.className='cell';d.dataset.r=r;d.dataset.c=c;
+      d.addEventListener('click',()=>gPick(r,c));
+      grid.appendChild(d);
+    }
+  }
+}
+function gCells(fn){$('grid').querySelectorAll('.cell').forEach(d=>fn(d,+d.dataset.r,+d.dataset.c))}
+function gClear(){
+  gCells(d=>{d.style.background='';d.style.color='';d.textContent='';d.classList.remove('pop','last')});
+  gLast=null;
+}
+function gShow(R,C,ok,done){
+  gAnim++;const id=gAnim;
+  gClear();gLast=[R,C,ok];
+  const list=[];
+  gCells((d,r,c)=>{if(r<=R&&c<=C)list.push([d,r,c])});
+  const total=R*C,delay=REDUCED?0:Math.min(85,Math.max(22,2200/total));
+  list.forEach(([d,r,c],i)=>{
+    setTimeout(()=>{
+      if(id!==gAnim)return;
+      const P=ok===false?{l:'var(--red-l)',m:'var(--red)'}:RAMPS[(r-1)%RAMPS.length];
+      d.style.background=P.l;
+      d.textContent=numMode==='count'?(r-1)*C+c:r*c;
+      if(c===C){d.style.background=P.m;d.classList.add('last')}
+      if(!REDUCED)d.classList.add('pop');
+      if(numMode==='count')$('gEq').innerHTML=eqHTML(R,'×',C,(r-1)*C+c);
+      blipUp(i+1);
+      if(i===total-1){
+        if(numMode!=='count')$('gEq').innerHTML=eqHTML(R,'×',C,R*C);
+        if(done)done();
+      }
+    },i*delay);
+  });
+}
+function gWords(R,C){
+  const rows=R+' '+pl(R,['rząd','rzędy','rzędów']);
+  if(numMode==='count')return rows+' po '+C+'. Koniec każdego rzędu: liczymy skokami!';
+  return 'Każde pole = rząd × kolumna. Róg to wynik.';
+}
+function gPick(r,c){
+  if(gLock)return;
+  if(gMode==='exp'){
+    $('gEq').innerHTML=eqHTML(r,'×',c,null);
+    $('gHint').textContent=gWords(r,c);
+    gShow(r,c);
+  }else{
+    const[a,b]=gTarget;
+    if((r===a&&c===b)||(r===b&&c===a)){
+      gLock=true;
+      $('gEq').innerHTML=eqHTML(r,'×',c,null);
+      $('gHint').textContent='';
+      gShow(r,c,null,()=>{
+        $('gEq').innerHTML=eqHTML(r,'×',c,r*c,true);
+        $('gHint').textContent='Masz gwiazdkę!';
+        addStar();
+        setTimeout(()=>{gLock=false;gQuizNext()},2000);
+      });
+    }else{
+      gShow(r,c,false,()=>{
+        $('gEq').innerHTML='To jest <span class="bad">'+r+' × '+c+' = '+(r*c)+'</span>';
+        $('gHint').textContent='Szukamy '+a+' × '+b+'. Spróbuj jeszcze raz!';
+      });
+    }
+  }
+}
+function gQuizNext(){
+  const a=1+Math.floor(Math.random()*gMAX),b=1+Math.floor(Math.random()*gMAX);
+  gTarget=[a,b];gClear();
+  $('gEq').innerHTML=eqHTML(a,'×',b,null);
+  $('gHint').textContent='Kliknij pole: '+a+' '+pl(a,['rząd','rzędy','rzędów'])+' i '+b+' w rzędzie';
+}
+function setGMode(m){
+  gMode=m;gAnim++;
+  $('gExp').classList.toggle('on',m==='exp');
+  $('gQuiz').classList.toggle('on',m==='quiz');
+  if(m==='quiz')gQuizNext();
+  else{gClear();$('gEq').textContent='Kliknij pole!';$('gHint').textContent=''}
+}
+$('gExp').addEventListener('click',()=>setGMode('exp'));
+$('gQuiz').addEventListener('click',()=>setGMode('quiz'));
+$('gMax').addEventListener('click',()=>{
+  gMAX=gMAX===5?10:5;
+  $('gMax').textContent='Do '+gMAX;
+  if(gMode==='quiz')gQuizNext();
+});
+$('gNum').addEventListener('click',()=>{
+  numMode=numMode==='count'?'prod':'count';
+  $('gNum').textContent=numMode==='count'?'Licz: 1,2,3…':'Wyniki: r×k';
+  if(gLast&&gMode==='exp'){
+    const[R,C]=gLast;
+    $('gEq').innerHTML=eqHTML(R,'×',C,null);
+    $('gHint').textContent=gWords(R,C);
+    gShow(R,C);
+  }
+});
+
+/* ---------- start ---------- */
+$('starN').textContent=stars;
+markTheme();
+buildGrid();
+kExplore();
+</script>
+</body>
+</html>

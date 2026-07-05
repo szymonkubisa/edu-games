@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gry na wesoło</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#3B2E58; --bg:#F6F1FF; --card:#FFFFFF;
+  --teal:#2BB58A; --teal-l:#DDF5EC;
+  --coral:#F4764C; --coral-l:#FDE7DE;
+  --sun:#F0A11F; --sun-l:#FCEFD6;
+  --pink:#EE6FA4; --pink-l:#FCE3EE;
+  --violet:#8B7BE8; --violet-l:#EBE7FC;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:"Baloo 2","Comic Sans MS","Chalkboard SE",ui-rounded,system-ui,sans-serif;
+  background:var(--bg); color:var(--ink);
+  min-height:100vh; padding:16px;
+}
+.wrap{max-width:720px;margin:0 auto}
+header{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+h1{font-size:clamp(24px,6vw,34px);font-weight:700;flex:1;min-width:200px}
+.stars{
+  display:flex;align-items:center;gap:6px;font-size:22px;font-weight:700;
+  background:var(--sun-l);border:3px solid var(--sun);border-radius:999px;padding:4px 16px;color:#8A5A0A;
+}
+button{
+  font-family:inherit;font-size:16px;font-weight:700;color:var(--ink);
+  background:var(--card);border:3px solid #D9CFEF;border-radius:16px;
+  padding:9px 15px;cursor:pointer;transition:transform .12s,box-shadow .12s;
+  box-shadow:0 3px 0 #D9CFEF;
+}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
+button:focus-visible{outline:3px dashed var(--violet);outline-offset:3px}
+
+.games{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.game{
+  display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;
+  text-decoration:none;color:var(--ink);
+  background:var(--card);border:4px solid var(--ink);border-radius:28px;
+  padding:26px 18px;box-shadow:0 6px 0 rgba(59,46,88,.18);
+  transition:transform .12s,box-shadow .12s;
+}
+.game:hover{transform:translateY(-3px)}
+.game:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(59,46,88,.18)}
+.game .em{font-size:72px;line-height:1.1}
+.game .name{font-size:clamp(20px,4.5vw,26px);font-weight:700}
+.game .sub{font-size:15px;color:#8A7FB0}
+.game .mine{
+  margin-top:4px;font-size:15px;font-weight:700;color:#8A5A0A;
+  background:var(--sun-l);border-radius:999px;padding:2px 12px;
+}
+.game.math{border-color:var(--teal);box-shadow:0 6px 0 rgba(43,181,138,.28)}
+.game.read{border-color:var(--coral);box-shadow:0 6px 0 rgba(244,118,76,.28)}
+
+.panel{
+  background:var(--card);border:3px solid #D9CFEF;border-radius:24px;
+  padding:18px;margin-top:18px;
+}
+.panel h2{font-size:19px;font-weight:700;margin-bottom:12px}
+.badges{display:flex;gap:12px;flex-wrap:wrap}
+.badge{
+  display:flex;flex-direction:column;align-items:center;gap:2px;width:88px;text-align:center;
+  padding:10px 6px;border-radius:18px;border:3px solid #E7E0F6;background:var(--bg);
+}
+.badge .em{font-size:34px;line-height:1;filter:grayscale(1);opacity:.35}
+.badge.got{border-color:var(--violet);background:var(--violet-l)}
+.badge.got .em{filter:none;opacity:1}
+.badge .lbl{font-size:12px;font-weight:700;color:#6B5E8E}
+.foot{display:flex;justify-content:center;margin-top:18px}
+.linkBtn{border-style:dashed;box-shadow:none;color:#8A7FB0;font-size:14px}
+.linkBtn:active{transform:translateY(2px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="hTitle">🎈 Gry na wesoło</h1>
+    <button id="bLang">EN</button>
+    <span class="stars">⭐ <span id="starN">0</span></span>
+  </header>
+
+  <div class="games">
+    <a class="game math" href="matematyka-na-wesolo.html">
+      <span class="em">➗</span>
+      <span class="name" id="nMath">Matematyka</span>
+      <span class="sub" id="sMath">Dodawaj, odejmuj, mnóż</span>
+      <span class="mine">⭐ <span id="mMath">0</span></span>
+    </a>
+    <a class="game read" href="czytanie-na-wesolo.html">
+      <span class="em">📖</span>
+      <span class="name" id="nRead">Czytanie</span>
+      <span class="sub" id="sRead">Historyjki i słowa</span>
+      <span class="mine">⭐ <span id="mRead">0</span></span>
+    </a>
+  </div>
+
+  <div class="panel">
+    <h2 id="hBadges">🏅 Twoje odznaki</h2>
+    <div class="badges" id="badges"></div>
+  </div>
+
+  <div class="foot">
+    <button class="linkBtn" id="bReset">Wyzeruj postępy</button>
+  </div>
+</div>
+
+<script src="store.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const T={
+  pl:{title:'🎈 Gry na wesoło',math:'Matematyka',mathSub:'Dodawaj, odejmuj, mnóż',
+      read:'Czytanie',readSub:'Historyjki i słowa',badges:'🏅 Twoje odznaki',
+      reset:'Wyzeruj postępy',confirm:'Wyzerować wszystkie gwiazdki i odznaki?'},
+  en:{title:'🎈 Fun Games',math:'Maths',mathSub:'Add, subtract, multiply',
+      read:'Reading',readSub:'Stories and words',badges:'🏅 Your badges',
+      reset:'Reset progress',confirm:'Reset all stars and badges?'}
+};
+let lang=EduStore.get('lang','pl');
+
+function render(){
+  const t=T[lang];
+  document.documentElement.lang=lang;
+  $('hTitle').textContent=t.title;
+  $('nMath').textContent=t.math;   $('sMath').textContent=t.mathSub;
+  $('nRead').textContent=t.read;   $('sRead').textContent=t.readSub;
+  $('hBadges').textContent=t.badges;
+  $('bReset').textContent=t.reset;
+  $('bLang').textContent=lang==='pl'?'EN':'PL';
+
+  $('starN').textContent=EduStore.totalStars();
+  $('mMath').textContent=EduStore.stars('math');
+  $('mRead').textContent=EduStore.stars('reading');
+
+  const got=EduStore.badges();
+  const box=$('badges');box.innerHTML='';
+  EduStore.BADGES.forEach(b=>{
+    const has=got.includes(b.id);
+    const el=document.createElement('div');
+    el.className='badge'+(has?' got':'');
+    el.innerHTML='<span class="em">'+b.em+'</span><span class="lbl">'+(lang==='pl'?b.pl:b.en)+'</span>';
+    box.appendChild(el);
+  });
+}
+
+$('bLang').addEventListener('click',()=>{
+  lang=lang==='pl'?'en':'pl';
+  EduStore.set('lang',lang);
+  render();
+});
+$('bReset').addEventListener('click',()=>{
+  if(confirm(T[lang].confirm)){EduStore.reset();render();}
+});
+
+render();
+</script>
+</body>
+</html>

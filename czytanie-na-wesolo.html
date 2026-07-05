@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Czytanie na wesoło</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#3B2E58; --bg:#F6F1FF; --card:#FFFFFF;
+  --teal:#2BB58A; --teal-l:#DDF5EC;
+  --coral:#F4764C; --coral-l:#FDE7DE;
+  --sun:#F0A11F; --sun-l:#FCEFD6;
+  --pink:#EE6FA4; --pink-l:#FCE3EE;
+  --violet:#8B7BE8; --violet-l:#EBE7FC;
+  --red:#E24B4A; --red-l:#FADCDC;
+  --green:#5CB531; --green-l:#E4F3D9;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:"Baloo 2","Comic Sans MS","Chalkboard SE",ui-rounded,system-ui,sans-serif;
+  background:var(--bg); color:var(--ink);
+  min-height:100vh; padding:16px;
+}
+.wrap{max-width:720px;margin:0 auto}
+header{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+h1{font-size:clamp(20px,5vw,28px);font-weight:700;flex:1;min-width:160px}
+.stars{
+  display:flex;align-items:center;gap:6px;font-size:22px;font-weight:700;
+  background:var(--sun-l);border:3px solid var(--sun);border-radius:999px;padding:2px 14px;color:#8A5A0A;
+}
+button{
+  font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);
+  background:var(--card);border:3px solid #D9CFEF;border-radius:16px;
+  padding:10px 16px;cursor:pointer;transition:transform .12s,box-shadow .12s;
+  box-shadow:0 3px 0 #D9CFEF;
+}
+button:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
+button.on{border-color:var(--violet);background:var(--violet-l);color:#4A3DA8;box-shadow:0 3px 0 var(--violet)}
+a.home{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:46px;height:46px;font-size:22px;text-decoration:none;color:var(--ink);
+  background:var(--card);border:3px solid #D9CFEF;border-radius:16px;
+  box-shadow:0 3px 0 #D9CFEF;
+}
+a.home:active{transform:translateY(2px);box-shadow:0 1px 0 #D9CFEF}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{flex:1;min-width:120px;font-size:19px;padding:12px}
+.tabs button.on{border-color:var(--coral);background:var(--coral-l);color:#A03D1E;box-shadow:0 3px 0 var(--coral)}
+.card{background:var(--card);border-radius:24px;padding:20px;box-shadow:0 4px 14px rgba(59,46,88,.08)}
+.hidden{display:none!important}
+
+/* ---- wybory ---- */
+.pickLabel{font-size:19px;font-weight:700;margin:14px 0 8px}
+.pickLabel:first-child{margin-top:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  min-width:92px;padding:8px 10px;font-size:14px;border-radius:18px;
+}
+.chip .em{font-size:32px;line-height:1}
+.chip.sel{border-color:var(--teal);background:var(--teal-l);color:#0E6E4F;box-shadow:0 3px 0 var(--teal)}
+.goBtn{
+  display:block;margin:20px auto 4px;font-size:22px;padding:14px 34px;
+  border-color:var(--teal);background:var(--teal);color:#fff;box-shadow:0 4px 0 #1E8A67;
+}
+.goBtn:active{box-shadow:0 1px 0 #1E8A67}
+.goBtn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ---- historyjka ---- */
+.progress{font-size:15px;font-weight:700;color:#9A8FBE;margin-bottom:8px}
+#done{font-size:18px;line-height:1.55;color:#AFA5D2;margin-bottom:10px;max-height:150px;overflow-y:auto}
+#done .s{display:block}
+#now{
+  font-size:clamp(25px,5.6vw,34px);line-height:1.45;font-weight:700;
+  min-height:100px;margin:6px 0 14px;
+}
+.syl0{color:var(--ink)}
+.syl1{color:var(--coral)}
+.storyBtns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.readBtn{
+  font-size:20px;padding:12px 24px;border-color:var(--pink);background:var(--pink);
+  color:#fff;box-shadow:0 4px 0 #C24A7E;
+}
+.readBtn:active{box-shadow:0 1px 0 #C24A7E}
+.pop{animation:pop .3s ease-out}
+@keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+.wob{animation:wob .5s ease-in-out}
+@keyframes wob{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.shk{animation:shk .3s ease-in-out 2}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ---- quiz ---- */
+.q{font-size:clamp(21px,5vw,27px);font-weight:700;margin-bottom:14px}
+.opts{display:flex;gap:10px;flex-wrap:wrap}
+.opt{
+  flex:1;min-width:130px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:14px;font-size:18px;border-radius:20px;
+}
+.opt .em{font-size:42px;line-height:1}
+.opt.good{border-color:var(--green);background:var(--green-l);box-shadow:0 3px 0 var(--green)}
+.opt.bad{border-color:var(--red);background:var(--red-l);box-shadow:0 3px 0 var(--red)}
+.fb{font-size:20px;font-weight:700;min-height:30px;margin-top:12px}
+
+/* ---- słowa ---- */
+#wEmoji{font-size:clamp(80px,22vw,130px);text-align:center;line-height:1.2;margin:6px 0 16px;cursor:pointer}
+.wordOpt{font-size:clamp(22px,5.5vw,30px);padding:14px 10px}
+
+/* ---- konfetti ---- */
+.cf{position:fixed;top:-40px;font-size:26px;pointer-events:none;z-index:9;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="home" href="index.html" aria-label="Menu">🏠</a>
+  <h1 id="hTitle">📖 Czytanie na wesoło</h1>
+  <button id="bLang">EN</button>
+  <button id="bSyl" aria-pressed="false">Sy-la-by</button>
+  <button id="bSnd" aria-label="Dźwięk">🔊</button>
+  <span class="stars">⭐ <span id="starN">0</span></span>
+</header>
+
+<div class="tabs">
+  <button id="tStory" class="on">📖 Historyjka</button>
+  <button id="tWords">🔤 Słowa</button>
+</div>
+
+<!-- ===== WYBÓR ===== -->
+<div class="card" id="pgPick">
+  <div class="pickLabel" id="lblHero"></div>
+  <div class="chips" id="cHero"></div>
+  <div class="pickLabel" id="lblFriend"></div>
+  <div class="chips" id="cFriend"></div>
+  <div class="pickLabel" id="lblPlace"></div>
+  <div class="chips" id="cPlace"></div>
+  <div class="pickLabel" id="lblThing"></div>
+  <div class="chips" id="cThing"></div>
+  <button class="goBtn" id="bGo" disabled></button>
+</div>
+
+<!-- ===== CZYTANIE ===== -->
+<div class="card hidden" id="pgStory">
+  <div class="progress" id="prog"></div>
+  <div id="done"></div>
+  <div id="now"></div>
+  <div class="storyBtns">
+    <button class="readBtn" id="bRead"></button>
+    <button id="bTts" aria-label="Posłuchaj"></button>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="card hidden" id="pgQuiz">
+  <div class="q" id="qTxt"></div>
+  <div class="opts" id="qOpts"></div>
+  <div class="fb" id="qFb"></div>
+</div>
+
+<!-- ===== KONIEC ===== -->
+<div class="card hidden" id="pgEnd" style="text-align:center">
+  <div style="font-size:70px" class="wob">🎉</div>
+  <div class="q" id="endTxt" style="margin:10px 0 18px"></div>
+  <button class="goBtn" id="bAgain"></button>
+</div>
+
+<!-- ===== SŁOWA ===== -->
+<div class="card hidden" id="pgWords">
+  <div class="q" id="wQ" style="text-align:center"></div>
+  <div id="wEmoji"></div>
+  <div class="opts" id="wOpts"></div>
+  <div class="fb" id="wFb" style="text-align:center"></div>
+</div>
+</div>
+
+<script src="store.js"></script>
+<script>
+/* =============== DŹWIĘKI =============== */
+let snd=EduStore.get('sound',true),AC;
+function ac(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();return AC}
+function tone(f,t,d,type,g){
+  if(!snd)return;const a=ac(),o=a.createOscillator(),v=a.createGain();
+  o.type=type||'sine';o.frequency.value=f;
+  v.gain.setValueAtTime(g||.16,a.currentTime+t);
+  v.gain.exponentialRampToValueAtTime(.001,a.currentTime+t+d);
+  o.connect(v);v.connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+d);
+}
+function popS(){tone(660,0,.12)}
+function pageS(){tone(440,0,.09);tone(660,.08,.12)}
+function goodS(){[523,659,784,1047].forEach((f,i)=>tone(f,i*.09,.22))}
+function badS(){tone(220,0,.25,'square',.08)}
+function fanfare(){[523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,i*.11,.24))}
+
+/* =============== TTS =============== */
+function say(txt){
+  if(!('speechSynthesis' in window)||!txt)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt.replace(/\|/g,''));
+  const code=lang==='pl'?'pl':'en';
+  u.lang=lang==='pl'?'pl-PL':'en-US';u.rate=.82;u.pitch=1.05;
+  const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.startsWith(code));
+  if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+if('speechSynthesis' in window)speechSynthesis.getVoices();
+
+/* =============== SYLABY =============== */
+let sylOn=EduStore.get('syllables',false);
+function render(txt){
+  return txt.split(' ').map(w=>{
+    if(!sylOn)return '<span class="w">'+w.replace(/\|/g,'')+'</span>';
+    const parts=w.split('|');
+    return '<span class="w">'+parts.map((p,i)=>'<span class="syl'+(i%2)+'">'+p+'</span>').join('')+'</span>';
+  }).join(' ');
+}
+function plain(t){return t.replace(/\|/g,'')}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+
+/* =============== DANE PL =============== */
+const PL={
+ ui:{
+  title:'📖 Czytanie na wesoło', tabStory:'📖 Historyjka', tabWords:'🔤 Słowa',
+  syl:'Sy-la-by',
+  lblHero:'Kto jest bohaterem?', lblFriend:'Z kim?', lblPlace:'Gdzie?', lblThing:'Jaka rzecz?',
+  go:'Zaczynamy! 🚀', read:'Przeczytałam! ➜', readLast:'Przeczytałam! 🌟',
+  tts:'🔊 Pomóż mi', bravo:'Brawo! ⭐', retry:'Spróbuj jeszcze raz!',
+  end:s=>'Super czytanie, masz '+s+' ⭐!', again:'Nowa historyjka! 📖',
+  wordsQ:'Co to jest? Wybierz słowo!',
+  qHero:'Kto jest bo|ha|te|rem?', qPlace:'Gdzie to by|ło?', qThing:'Ja|ka rzecz by|ła w baj|ce?',
+  sentence:(i,n)=>'Zdanie '+i+' z '+n
+ },
+ HEROES:[
+  {em:'🐱',nom:'kot Pso|tek',short:'Pso|tek',g:'m'},
+  {em:'🧚',nom:'wróż|ka Po|la',short:'Po|la',g:'f'},
+  {em:'🤖',nom:'ro|bot Bzik',short:'Bzik',g:'m'},
+  {em:'🐶',nom:'pie|sek Maks',short:'Maks',g:'m'},
+  {em:'👑',nom:'księż|nicz|ka Zo|sia',short:'Zo|sia',g:'f'},
+ ],
+ FRIENDS:[
+  {em:'🐲',nom:'smok Fe|lek',short:'Fe|lek',g:'m',ins:'ze smo|kiem Fel|kiem'},
+  {em:'🦉',nom:'so|wa Lo|la',short:'Lo|la',g:'f',ins:'z so|wą Lo|lą'},
+  {em:'🧸',nom:'miś Bo|rys',short:'Bo|rys',g:'m',ins:'z mi|siem Bo|ry|sem'},
+  {em:'🐈',nom:'kot|ka Ki|ra',short:'Ki|ra',g:'f',ins:'z kot|ką Ki|rą'},
+  {em:'👻',nom:'du|szek Bo|bo',short:'Bo|bo',g:'m',ins:'z dusz|kiem Bo|bo'},
+ ],
+ PLACES:[
+  {em:'🌲',nom:'las',go:'do la|su',at:'w le|sie'},
+  {em:'🏰',nom:'za|mek',go:'do zam|ku',at:'w zam|ku'},
+  {em:'🚀',nom:'kos|mos',go:'w kos|mos',at:'w kos|mo|sie'},
+  {em:'🏪',nom:'sklep',go:'do skle|pu',at:'w skle|pie'},
+  {em:'🌊',nom:'mo|rze',go:'nad mo|rze',at:'nad mo|rzem'},
+ ],
+ THINGS:[
+  {em:'💎',nom:'skarb',gen:'skar|bu',g:'m'},
+  {em:'🍦',nom:'lo|dy',gen:'lo|dów',g:'p'},
+  {em:'🎈',nom:'ba|lon',gen:'ba|lo|nu',g:'m'},
+  {em:'🌸',nom:'kwia|tek',gen:'kwiat|ka',g:'m'},
+  {em:'🎂',nom:'tort',gen:'tor|tu',g:'m'},
+ ],
+ WORDS:[
+  {em:'🐱',w:'kot'},{em:'🏠',w:'dom'},{em:'🐟',w:'ry|ba'},{em:'🍦',w:'lo|dy'},
+  {em:'🎈',w:'ba|lon'},{em:'🐉',w:'smok'},{em:'🦉',w:'so|wa'},{em:'🐸',w:'ża|ba'},
+  {em:'🦋',w:'mo|tyl'},{em:'🧀',w:'ser'},{em:'👑',w:'ko|ro|na'},{em:'🌸',w:'kwia|tek'},
+  {em:'🎂',w:'tort'},{em:'🚗',w:'au|to'},{em:'🐘',w:'słoń'},{em:'📖',w:'książ|ka'},
+  {em:'⭐',w:'gwiaz|da'},{em:'❤️',w:'ser|ce'},{em:'🍎',w:'jabł|ko'},{em:'🍋',w:'cy|try|na'},
+  {em:'🍌',w:'ba|nan'},{em:'⚽',w:'pił|ka'},{em:'🖍️',w:'kred|ka'},{em:'🌙',w:'księ|życ'},
+ ],
+ stories(h,f,p,t){
+  const hv=(m,x)=>h.g==='m'?m:x;           // bohater
+  const fv=(m,x)=>f.g==='m'?m:x;           // przyjaciel
+  const tv=(m,x)=>t.g==='m'?m:x;           // rzecz (m / l.mn.)
+  const pv=(m,x)=>(h.g==='f'&&f.g==='f')?x:m; // oboje razem
+  return [
+   { /* 1. Skarb z niespodzianką */
+    s:[
+     'To jest '+h.nom+'.',
+     cap(h.short)+' '+hv('po|szedł','po|szła')+' '+p.go+' '+f.ins+'.',
+     'Ra|zem szu|ka|li '+t.gen+'.',
+     pv('Zaj|rze|li','Zaj|rza|ły')+' pod ka|mień. Nic!',
+     pv('Zaj|rze|li','Zaj|rza|ły')+' za drze|wo. Też nic!',
+     '„Mo|że tam?" — '+fv('po|wie|dział','po|wie|dzia|ła')+' '+f.short+'.',
+     'Na|gle coś błys|nę|ło w tra|wie!',
+     'To '+tv('był','by|ły')+' '+t.nom+'! '+t.em,
+     'Ale '+t.nom+'... '+tv('kich|nął','kich|nę|ły')+'!',
+     '„A psik!"',
+     'W środ|ku spa|ła ma|ła ża|ba. 🐸',
+     'Ża|ba ziew|nę|ła i po|wie|dzia|ła: „Dzień do|bry!"',
+     'Wszys|cy wy|buch|nę|li śmie|chem.',
+     'Ko|niec. 🎉'
+    ],
+    q:{txt:'Kto spał w środ|ku?',opts:[
+     {em:'🐸',lbl:'ża|ba',ok:true},{em:'🐭',lbl:'mysz|ka'},{em:'🦔',lbl:'jeż'}
+    ]}
+   },
+   { /* 2. Urodziny i myszka */
+    s:[
+     cap(h.nom)+' '+hv('miał','mia|ła')+' dziś u|ro|dzi|ny. 🎁',
+     hv('Za|pro|sił','Za|pro|si|ła')+' go|ści '+p.at+'.',
+     fv('Przy|szedł','Przy|szła')+' '+f.nom+' z pre|zen|tem.',
+     'Na sto|le '+tv('cze|kał','cze|ka|ły')+' '+t.nom+'. '+t.em,
+     'Wszys|cy śpie|wa|li: „Sto lat!"',
+     'Wtem zgas|ło świat|ło!',
+     'Gdy za|błys|ło... '+t.nom+' '+tv('znik|nął','znik|nę|ły')+'!',
+     '„O nie!" — '+hv('krzyk|nął','krzyk|nę|ła')+' '+h.short+'.',
+     cap(f.short)+' '+fv('zna|lazł','zna|la|zła')+' ma|łe śla|dy.',
+     'Pro|wa|dzi|ły pod stół...',
+     'Tam sie|dzia|ła mysz|ka z o|krusz|ka|mi! 🐭',
+     '„Prze|pra|szam, by|łam głod|na!" — pis|nę|ła.',
+     'Mysz|ka do|sta|ła swój ka|wa|łek i wszys|cy się śmia|li.',
+     'Ko|niec. 🎉'
+    ],
+    q:{txt:'Kto scho|wał się pod sto|łem?',opts:[
+     {em:'🐭',lbl:'mysz|ka',ok:true},{em:'🐸',lbl:'ża|ba'},{em:'🐦',lbl:'pta|szek'}
+    ]}
+   },
+   { /* 3. Psotna różdżka */
+    s:[
+     cap(h.nom)+' '+hv('zna|lazł','zna|la|zła')+' różdż|kę '+p.at+'. 🪄',
+     fv('Przy|szedł','Przy|szła')+' '+f.nom+'.',
+     '„Co to?" — '+fv('za|py|tał','za|py|ta|ła')+' '+f.short+'.',
+     '„Ma|gicz|na różdż|ka!" — '+hv('od|po|wie|dział','od|po|wie|dzia|ła')+' '+h.short+'.',
+     cap(h.short)+' '+hv('mach|nął','mach|nę|ła')+' nią raz...',
+     'Bum! '+tv('Po|ja|wił się','Po|ja|wi|ły się')+' '+t.nom+'! '+t.em,
+     hv('Mach|nął','Mach|nę|ła')+' dru|gi raz...',
+     'Bum! '+cap(t.nom)+' '+tv('u|rósł','u|ro|sły')+' jak dom!',
+     '„O|jej!" — '+fv('pis|nął','pis|nę|ła')+' '+f.short+'.',
+     hv('Mach|nął','Mach|nę|ła')+' trze|ci raz...',
+     'I różdż|ka zro|bi|ła psi|kus!',
+     'Za|mie|ni|ła się w ba|na|na! 🍌',
+     cap(f.short)+' '+fv('zjadł','zja|dła')+' ba|na|na. „Mniam!"',
+     'Ko|niec. 🎉'
+    ],
+    q:{txt:'W co za|mie|ni|ła się różdż|ka?',opts:[
+     {em:'🍌',lbl:'w ba|na|na',ok:true},{em:'🍎',lbl:'w jabł|ko'},{em:'🍋',lbl:'w cy|try|nę'}
+    ]}
+   },
+   { /* 4. Śmieszny sen */
+    s:[
+     cap(h.nom)+' '+hv('za|snął','za|snę|ła')+' '+p.at+'. 😴',
+     'O|bok '+fv('spał','spa|ła')+' '+f.nom+'.',
+     cap(h.short)+' '+hv('miał','mia|ła')+' bar|dzo śmiesz|ny sen.',
+     'We śnie '+tv('la|tał','la|ta|ły')+' '+t.nom+'! '+t.em,
+     cap(t.nom)+' '+tv('śpie|wał','śpie|wa|ły')+' pio|sen|kę!',
+     '„La la la, tra la la!"',
+     'Po|tem '+tv('tań|czył','tań|czy|ły')+' na chmu|rze!',
+     'Na|gle... łas|kot|ki!',
+     cap(h.short)+' '+hv('o|two|rzył','o|two|rzy|ła')+' jed|no o|ko.',
+     'To '+f.short+' '+fv('łas|ko|tał','łas|ko|ta|ła')+' '+(h.g==='m'?'go':'ją')+' piór|kiem! 🪶',
+     '„Po|bud|ka, śpio|chu!"',
+     cap(h.short)+' '+hv('śmiał','śmia|ła')+' się bar|dzo głoś|no.',
+     '„Śni|ły mi się cu|da!" — '+hv('po|wie|dział','po|wie|dzia|ła')+' '+h.short+'.',
+     'Ko|niec. 🎉'
+    ],
+    q:{txt:'Kto łas|ko|tał '+h.short+' piór|kiem?',list:'F',ok:f}
+   }
+  ];
+ }
+};
+
+/* =============== DANE EN =============== */
+const EN={
+ ui:{
+  title:'📖 Fun Reading', tabStory:'📖 Story', tabWords:'🔤 Words',
+  syl:'Syl-la-bles',
+  lblHero:'Who is the hero?', lblFriend:'With whom?', lblPlace:'Where?', lblThing:'What thing?',
+  go:"Let's go! 🚀", read:'I read it! ➜', readLast:'I read it! 🌟',
+  tts:'🔊 Help me', bravo:'Great! ⭐', retry:'Try again!',
+  end:s=>'Great reading! You have '+s+' ⭐!', again:'New story! 📖',
+  wordsQ:'What is it? Pick the word!',
+  qHero:'Who is the he|ro?', qPlace:'Where was it?', qThing:'What thing was in the sto|ry?',
+  sentence:(i,n)=>'Sentence '+i+' of '+n
+ },
+ HEROES:[
+  {em:'🐱',nom:'Tom the Cat',short:'Tom',g:'m'},
+  {em:'🧚',nom:'Mi|a the Fai|ry',short:'Mi|a',g:'f'},
+  {em:'🤖',nom:'Zip the Ro|bot',short:'Zip',g:'m'},
+  {em:'🐶',nom:'Max the Pup|py',short:'Max',g:'m'},
+  {em:'👑',nom:'Rose the Prin|cess',short:'Rose',g:'f'},
+ ],
+ FRIENDS:[
+  {em:'🐲',nom:'Rex the Drag|on',short:'Rex',g:'m'},
+  {em:'🦉',nom:'Lil|y the Owl',short:'Lil|y',g:'f'},
+  {em:'🧸',nom:'Ben the Bear',short:'Ben',g:'m'},
+  {em:'🐈',nom:'Ki|ki the Kit|ty',short:'Ki|ki',g:'f'},
+  {em:'👻',nom:'Boo the Ghost',short:'Boo',g:'m'},
+ ],
+ PLACES:[
+  {em:'🌲',nom:'for|est',go:'to the for|est',at:'in the for|est'},
+  {em:'🏰',nom:'cas|tle',go:'to the cas|tle',at:'in the cas|tle'},
+  {em:'🚀',nom:'space',go:'to space',at:'in space'},
+  {em:'🏪',nom:'shop',go:'to the shop',at:'in the shop'},
+  {em:'🌊',nom:'sea',go:'to the sea',at:'at the sea'},
+ ],
+ THINGS:[
+  {em:'💎',nom:'trea|sure'},
+  {em:'🍦',nom:'ice cream'},
+  {em:'🎈',nom:'bal|loon'},
+  {em:'🌸',nom:'flow|er'},
+  {em:'🎂',nom:'cake'},
+ ],
+ WORDS:[
+  {em:'🐱',w:'cat'},{em:'🐶',w:'dog'},{em:'🏠',w:'house'},{em:'🐟',w:'fish'},
+  {em:'🐸',w:'frog'},{em:'🦉',w:'owl'},{em:'🐉',w:'drag|on'},{em:'🦋',w:'but|ter|fly'},
+  {em:'🧀',w:'cheese'},{em:'👑',w:'crown'},{em:'🌸',w:'flow|er'},{em:'🎂',w:'cake'},
+  {em:'🚗',w:'car'},{em:'🐘',w:'el|e|phant'},{em:'📖',w:'book'},{em:'⭐',w:'star'},
+  {em:'❤️',w:'heart'},{em:'🍎',w:'ap|ple'},{em:'🍋',w:'lem|on'},{em:'🍌',w:'ba|na|na'},
+  {em:'⚽',w:'ball'},{em:'🌙',w:'moon'},{em:'☀️',w:'sun'},{em:'🚢',w:'ship'},
+ ],
+ stories(h,f,p,t){
+  const He=h.g==='m'?'He':'She', he=h.g==='m'?'he':'she', him=h.g==='m'?'him':'her';
+  const fshe=f.g==='m'?'he':'she';
+  return [
+   { /* 1. Treasure surprise */
+    s:[
+     'This is '+h.nom+'.',
+     cap(h.short)+' went '+p.go+' with '+f.nom+'.',
+     'They looked for the '+t.nom+'.',
+     'They looked un|der a rock. Noth|ing!',
+     'They looked be|hind a tree. Noth|ing!',
+     '"May|be there?" said '+f.short+'.',
+     'Sud|den|ly some|thing spar|kled!',
+     'It was the '+t.nom+'! '+t.em,
+     'But the '+t.nom+'... sneezed!',
+     '"A|choo!"',
+     'A lit|tle frog was sleep|ing in|side. 🐸',
+     'The frog yawned and said: "Good morn|ing!"',
+     'They all laughed and laughed.',
+     'The end. 🎉'
+    ],
+    q:{txt:'Who was sleep|ing in|side?',opts:[
+     {em:'🐸',lbl:'a frog',ok:true},{em:'🐭',lbl:'a mouse'},{em:'🦔',lbl:'a hedge|hog'}
+    ]}
+   },
+   { /* 2. Birthday mouse */
+    s:[
+     cap(h.short)+' had a birth|day to|day. 🎁',
+     He+' in|vit|ed friends '+p.at+'.',
+     cap(f.nom)+' came with a gift.',
+     'On the ta|ble was the '+t.nom+'. '+t.em,
+     'Ev|ery|one sang: "Hap|py birth|day!"',
+     'Sud|den|ly the lights went out!',
+     'When they came back... the '+t.nom+' was gone!',
+     '"Oh no!" cried '+h.short+'.',
+     cap(f.short)+' found ti|ny foot|prints.',
+     'They led un|der the ta|ble...',
+     'A lit|tle mouse sat there with crumbs! 🐭',
+     '"Sor|ry, I was hun|gry!" she squeaked.',
+     'The mouse got her own piece and ev|ery|one laughed.',
+     'The end. 🎉'
+    ],
+    q:{txt:'Who hid un|der the ta|ble?',opts:[
+     {em:'🐭',lbl:'a mouse',ok:true},{em:'🐸',lbl:'a frog'},{em:'🐦',lbl:'a bird'}
+    ]}
+   },
+   { /* 3. Silly wand */
+    s:[
+     cap(h.short)+' found a mag|ic wand '+p.at+'. 🪄',
+     cap(f.nom)+' came by.',
+     '"What is that?" asked '+f.short+'.',
+     '"A mag|ic wand!" said '+h.short+'.',
+     cap(He)+' waved it once...',
+     'Boom! The '+t.nom+' ap|peared! '+t.em,
+     cap(He)+' waved it twice...',
+     'Boom! The '+t.nom+' grew as big as a house!',
+     '"Wow!" said '+f.short+'.',
+     cap(He)+' waved it three times...',
+     'And the wand played a trick!',
+     'It turned in|to a ba|na|na! 🍌',
+     cap(f.short)+' ate the ba|na|na. "Yum!"',
+     'The end. 🎉'
+    ],
+    q:{txt:'What did the wand turn in|to?',opts:[
+     {em:'🍌',lbl:'a ba|na|na',ok:true},{em:'🍎',lbl:'an ap|ple'},{em:'🍋',lbl:'a lem|on'}
+    ]}
+   },
+   { /* 4. Funny dream */
+    s:[
+     cap(h.short)+' fell a|sleep '+p.at+'. 😴',
+     cap(f.nom)+' slept close by.',
+     cap(He)+' had a ve|ry fun|ny dream.',
+     'In the dream the '+t.nom+' could fly! '+t.em,
+     'The '+t.nom+' sang a song!',
+     '"La la la, tra la la!"',
+     'Then it danced on a cloud!',
+     'Sud|den|ly... tick|les!',
+     cap(h.short)+' o|pened one eye.',
+     cap(f.short)+' was tick|ling '+him+' with a feath|er! 🪶',
+     '"Wake up, sleep|y head!"',
+     cap(h.short)+' laughed and laughed.',
+     '"What a dream!" '+he+' said.',
+     'The end. 🎉'
+    ],
+    q:{txt:'Who tick|led '+h.short+'?',list:'F',ok:f}
+   }
+  ];
+ }
+};
+
+/* =============== STAN =============== */
+let lang=EduStore.get('lang','pl');
+const D=()=>lang==='pl'?PL:EN;
+const UI=()=>D().ui;
+let stars=EduStore.stars('reading'),sel={h:null,f:null,p:null,t:null},story=null,idx=0,qIdx=0,lock=false,questions=[];
+const $=id=>document.getElementById(id);
+
+/* =============== UI TEKSTY =============== */
+function applyUI(){
+  const u=UI();
+  $('hTitle').textContent=u.title;
+  $('tStory').textContent=u.tabStory;
+  $('tWords').textContent=u.tabWords;
+  $('bSyl').textContent=u.syl;
+  $('lblHero').textContent=u.lblHero;
+  $('lblFriend').textContent=u.lblFriend;
+  $('lblPlace').textContent=u.lblPlace;
+  $('lblThing').textContent=u.lblThing;
+  $('bGo').textContent=u.go;
+  $('bTts').textContent=u.tts;
+  $('bAgain').textContent=u.again;
+  $('wQ').textContent=u.wordsQ;
+  $('bLang').textContent=lang==='pl'?'EN':'PL';
+  document.documentElement.lang=lang;
+}
+
+/* =============== WYBÓR =============== */
+function buildChips(){
+  const d=D();
+  const groups=[['cHero',d.HEROES,'h'],['cFriend',d.FRIENDS,'f'],['cPlace',d.PLACES,'p'],['cThing',d.THINGS,'t']];
+  groups.forEach(([elId,list,key])=>{
+    const el=$(elId);el.innerHTML='';
+    list.forEach(item=>{
+      const b=document.createElement('button');
+      b.className='chip';
+      b.innerHTML='<span class="em">'+item.em+'</span><span>'+plain(item.nom)+'</span>';
+      b.addEventListener('click',()=>{
+        popS();
+        sel[key]=item;
+        [...el.children].forEach(c=>c.classList.remove('sel'));
+        b.classList.add('sel');
+        $('bGo').disabled=!(sel.h&&sel.f&&sel.p&&sel.t);
+      });
+      el.appendChild(b);
+    });
+  });
+}
+
+$('bGo').addEventListener('click',()=>{
+  tone(523,0,.15);tone(784,.12,.2);
+  const all=D().stories(sel.h,sel.f,sel.p,sel.t);
+  story=all[Math.floor(Math.random()*all.length)];
+  idx=0;
+  buildQuestions();
+  show('pgStory');
+  renderStory();
+});
+
+/* =============== CZYTANIE =============== */
+function renderStory(){
+  const u=UI();
+  $('prog').textContent=u.sentence(idx+1,story.s.length);
+  $('done').innerHTML=story.s.slice(0,idx).map(s=>'<span class="s">'+plain(s)+'</span>').join('');
+  $('done').scrollTop=$('done').scrollHeight;
+  const nowEl=$('now');
+  nowEl.innerHTML=render(story.s[idx]);
+  nowEl.classList.remove('pop');void nowEl.offsetWidth;nowEl.classList.add('pop');
+  $('bRead').textContent = idx===story.s.length-1 ? u.readLast : u.read;
+}
+$('bRead').addEventListener('click',()=>{
+  pageS();
+  if(idx<story.s.length-1){idx++;renderStory()}
+  else{qIdx=0;show('pgQuiz');quiz()}
+});
+$('bTts').addEventListener('click',()=>say(story.s[idx]));
+
+/* =============== QUIZ =============== */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function fromList(list,ok,lbl){
+  const others=shuffle(list.filter(x=>x!==ok)).slice(0,2);
+  return shuffle([ok,...others]).map(x=>({em:x.em,lbl:lbl(x),ok:x===ok}));
+}
+function buildQuestions(){
+  const d=D(),u=UI();
+  questions=[
+   {txt:u.qHero, opts:fromList(d.HEROES,sel.h,x=>x.nom)},
+   {txt:u.qPlace,opts:fromList(d.PLACES,sel.p,x=>x.nom)},
+   {txt:u.qThing,opts:fromList(d.THINGS,sel.t,x=>x.nom)},
+  ];
+  const pq=story?story.q:null;
+}
+function plotQuestion(){
+  const d=D(),pq=story.q;
+  if(pq.list==='F')return {txt:pq.txt,opts:fromList(d.FRIENDS,pq.ok,x=>x.nom)};
+  return {txt:pq.txt,opts:shuffle([...pq.opts])};
+}
+function quiz(){
+  lock=false;$('qFb').textContent='';
+  const u=UI();
+  const Q = qIdx<3 ? questions[qIdx] : plotQuestion();
+  $('qTxt').innerHTML=render(Q.txt);
+  const opts=$('qOpts');opts.innerHTML='';
+  Q.opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML='<span class="em">'+o.em+'</span><span>'+render(o.lbl)+'</span>';
+    b.addEventListener('click',()=>{
+      if(lock)return;
+      if(o.ok){
+        lock=true;b.classList.add('good');goodS();
+        stars=EduStore.addStar('reading').count;bumpStars();
+        $('qFb').textContent=u.bravo;
+        setTimeout(()=>{
+          qIdx++;
+          if(qIdx<4)quiz();
+          else finish();
+        },1100);
+      }else{
+        b.classList.add('bad','shk');badS();
+        $('qFb').textContent=u.retry;
+        setTimeout(()=>b.classList.remove('bad','shk'),900);
+      }
+    });
+    opts.appendChild(b);
+  });
+}
+function bumpStars(){
+  $('starN').textContent=stars;
+  const s=$('starN').parentElement;
+  s.classList.remove('wob');void s.offsetWidth;s.classList.add('wob');
+}
+function finish(){
+  show('pgEnd');
+  $('endTxt').textContent=UI().end(stars);
+  fanfare();confetti();
+}
+$('bAgain').addEventListener('click',resetPick);
+function resetPick(){
+  sel={h:null,f:null,p:null,t:null};
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  $('bGo').disabled=true;
+  show('pgPick');
+}
+
+/* =============== KONFETTI =============== */
+function confetti(){
+  const ems=['⭐','🎉','💜','🌸','✨','📖'];
+  for(let i=0;i<26;i++){
+    const d=document.createElement('div');
+    d.className='cf';d.textContent=ems[i%ems.length];
+    d.style.left=Math.random()*100+'vw';
+    d.style.animationDuration=(2+Math.random()*2)+'s';
+    d.style.animationDelay=(Math.random()*.6)+'s';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),5200);
+  }
+}
+
+/* =============== SŁOWA =============== */
+let wCur=null,wLock=false;
+function wordRound(){
+  wLock=false;$('wFb').textContent='';
+  const W=D().WORDS,u=UI();
+  wCur=W[Math.floor(Math.random()*W.length)];
+  $('wEmoji').textContent=wCur.em;
+  $('wEmoji').classList.remove('pop');void $('wEmoji').offsetWidth;$('wEmoji').classList.add('pop');
+  const opts=$('wOpts');opts.innerHTML='';
+  const others=shuffle(W.filter(x=>x!==wCur)).slice(0,2);
+  shuffle([wCur,...others]).forEach(item=>{
+    const b=document.createElement('button');
+    b.className='opt wordOpt';
+    b.innerHTML=render(item.w);
+    b.addEventListener('click',()=>{
+      if(wLock)return;
+      if(item===wCur){
+        wLock=true;b.classList.add('good');goodS();
+        stars=EduStore.addStar('reading').count;bumpStars();
+        $('wFb').textContent=u.bravo;
+        setTimeout(wordRound,1000);
+      }else{
+        b.classList.add('bad','shk');badS();
+        $('wFb').textContent=u.retry;
+        setTimeout(()=>b.classList.remove('bad','shk'),900);
+      }
+    });
+    opts.appendChild(b);
+  });
+}
+$('wEmoji').addEventListener('click',()=>say(wCur?wCur.w:''));
+
+/* =============== NAWIGACJA =============== */
+const PAGES=['pgPick','pgStory','pgQuiz','pgEnd','pgWords'];
+let storyPage='pgPick';
+function show(id){
+  if(id!=='pgWords')storyPage=id;
+  PAGES.forEach(p=>$(p).classList.toggle('hidden',p!==id));
+}
+$('tStory').addEventListener('click',()=>{
+  $('tStory').classList.add('on');$('tWords').classList.remove('on');
+  show(storyPage);
+});
+$('tWords').addEventListener('click',()=>{
+  $('tWords').classList.add('on');$('tStory').classList.remove('on');
+  wordRound();
+  PAGES.forEach(p=>$(p).classList.toggle('hidden',p!=='pgWords'));
+});
+
+/* =============== PRZEŁĄCZNIKI =============== */
+$('bSyl').addEventListener('click',()=>{
+  sylOn=!sylOn;
+  EduStore.set('syllables',sylOn);
+  $('bSyl').classList.toggle('on',sylOn);
+  $('bSyl').setAttribute('aria-pressed',sylOn);
+  popS();
+  if(!$('pgStory').classList.contains('hidden'))renderStory();
+  if(!$('pgQuiz').classList.contains('hidden'))quiz();
+  if(!$('pgWords').classList.contains('hidden'))wordRound();
+});
+$('bSnd').addEventListener('click',()=>{
+  snd=!snd;EduStore.set('sound',snd);$('bSnd').textContent=snd?'🔊':'🔇';
+});
+$('bLang').addEventListener('click',()=>{
+  lang=lang==='pl'?'en':'pl';
+  EduStore.set('lang',lang);
+  popS();
+  applyUI();
+  buildChips();
+  const onWords=!$('pgWords').classList.contains('hidden');
+  resetPick();
+  if(onWords){
+    wordRound();
+    PAGES.forEach(p=>$(p).classList.toggle('hidden',p!=='pgWords'));
+  }
+});
+
+/* =============== START =============== */
+$('starN').textContent=stars;
+$('bSnd').textContent=snd?'🔊':'🔇';
+$('bSyl').classList.toggle('on',sylOn);
+$('bSyl').setAttribute('aria-pressed',sylOn);
+applyUI();
+buildChips();
+</script>
+</body>
+</html>
