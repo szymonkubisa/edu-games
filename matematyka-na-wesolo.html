@@ -81,9 +81,11 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .hd{color:#6B5E8E}
 .cell{background:var(--bg);cursor:pointer}
 .cell.last{color:#fff}
-.hd.mark{color:#C8760A;background:var(--sun-l);border-radius:8px;font-weight:800}
-.cell.guide{box-shadow:inset 0 0 0 2px var(--sun);border-radius:8px}
-.cell.cursor{box-shadow:inset 0 0 0 4px var(--sun);border-radius:8px}
+.hd.mark-row{color:#0E6E4F;background:var(--teal-l);border-radius:8px;font-weight:800}
+.hd.mark-col{color:#A03D1E;background:var(--coral-l);border-radius:8px;font-weight:800}
+.cell.guide-row{box-shadow:inset 0 0 0 2px var(--teal);border-radius:8px}
+.cell.guide-col{box-shadow:inset 0 0 0 2px var(--coral);border-radius:8px}
+.cell.cursor{box-shadow:inset 0 0 0 4px var(--violet);border-radius:8px}
 .hidden{display:none}
 @keyframes pop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.25);opacity:1}100%{transform:scale(1);opacity:1}}
 .pop{animation:pop .3s ease-out both}
@@ -153,8 +155,8 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
     </div>
     <div class="eq" id="gEq">Kliknij pole!</div>
     <div class="hint" id="gHint"></div>
-    <div class="board" id="gBoard"></div>
     <div class="grid" id="grid"></div>
+    <div class="ans" id="gAns"></div>
   </section>
 
   <!-- ============ DODAWANIE ============ -->
@@ -592,8 +594,8 @@ function buildGrid(){
 }
 function gCells(fn){$('grid').querySelectorAll('.cell').forEach(d=>fn(d,+d.dataset.r,+d.dataset.c))}
 function gClear(){
-  gCells(d=>{d.style.background='';d.style.color='';d.textContent='';d.classList.remove('pop','last','guide','cursor')});
-  $('grid').querySelectorAll('.hd.mark').forEach(h=>h.classList.remove('mark'));
+  gCells(d=>{d.style.background='';d.style.color='';d.textContent='';d.classList.remove('pop','last','guide-row','guide-col','cursor')});
+  $('grid').querySelectorAll('.hd.mark-row,.hd.mark-col').forEach(h=>h.classList.remove('mark-row','mark-col'));
   gLast=null;
 }
 function gShow(R,C,ok,done){
@@ -626,60 +628,57 @@ function gWords(R,C){
 }
 function gPick(r,c){
   if(gLock)return;
-  if(gMode==='exp'){
-    $('gEq').innerHTML=eqHTML(r,'×',c,null);
-    $('gHint').textContent=gWords(r,c);
-    gShow(r,c);
-  }else{
-    const[a,b]=gTarget;
-    if((r===a&&c===b)||(r===b&&c===a)){
-      gLock=true;
-      $('gEq').innerHTML=eqHTML(r,'×',c,null);
-      $('gHint').textContent='';
-      gShow(r,c,null,()=>{
-        $('gEq').innerHTML=eqHTML(r,'×',c,r*c,true);
-        $('gHint').textContent='Masz gwiazdkę!';
-        addStar();
-        setTimeout(()=>{gLock=false;gQuizNext()},2000);
-      });
-    }else{
-      gShow(r,c,false,()=>{
-        $('gEq').innerHTML='To jest <span class="bad">'+r+' × '+c+' = '+(r*c)+'</span>';
-        $('gHint').textContent='Szukamy '+a+' × '+b+'. Spróbuj jeszcze raz!';
-      });
-    }
-  }
+  if(gMode!=='exp')return;               // w zagadce odpowiadamy guzikami, nie polami
+  $('gEq').innerHTML=eqHTML(r,'×',c,null);
+  $('gHint').textContent=gWords(r,c);
+  gShow(r,c);
 }
-function gPackets(a,b){
-  const board=$('gBoard');board.innerHTML='';
-  for(let i=0;i<a;i++){
-    const bk=makeBasket(board,i,b,false);
-    bk.badge.style.opacity=1;bk.badge.textContent=(i+1)*b;
-  }
+/* cichy prostokąt-obrazek pola: koloruje blok a×b, bez liczb */
+function gRect(a,b){
+  gCells((d,r,c)=>{
+    if(r<=a&&c<=b){
+      const P=RAMPS[(r-1)%RAMPS.length];
+      d.style.background=c===b?P.m:P.l;
+      if(c===b)d.classList.add('last');
+    }
+  });
 }
 function gGuideClear(){
-  $('grid').querySelectorAll('.hd.mark').forEach(h=>h.classList.remove('mark'));
-  $('grid').querySelectorAll('.cell.guide,.cell.cursor').forEach(d=>d.classList.remove('guide','cursor'));
+  $('grid').querySelectorAll('.hd.mark-row,.hd.mark-col').forEach(h=>h.classList.remove('mark-row','mark-col'));
+  $('grid').querySelectorAll('.cell.guide-row,.cell.guide-col,.cell.cursor')
+    .forEach(d=>d.classList.remove('guide-row','guide-col','cursor'));
 }
 function gGuide(r,c){
   gGuideClear();
   $('grid').querySelectorAll('.hd').forEach(h=>{
-    if(+h.dataset.ch===c||+h.dataset.rh===r)h.classList.add('mark');
+    if(+h.dataset.rh===r)h.classList.add('mark-row');
+    if(+h.dataset.ch===c)h.classList.add('mark-col');
   });
   $('grid').querySelectorAll('.cell').forEach(d=>{
     const dr=+d.dataset.r,dc=+d.dataset.c;
     if(dr===r&&dc===c)d.classList.add('cursor');
-    else if((dr===r&&dc<=c)||(dc===c&&dr<=r))d.classList.add('guide');
+    else if(dr===r&&dc<=c)d.classList.add('guide-row');
+    else if(dc===c&&dr<=r)d.classList.add('guide-col');
   });
 }
-function gClearAids(){$('gBoard').innerHTML='';gGuideClear()}
+function gClearAids(){$('gAns').innerHTML='';gGuideClear()}
 function gExploreReset(){gClear();gClearAids();$('gEq').textContent='Kliknij pole!';$('gHint').textContent=''}
 function gQuizNext(){
+  gLock=false;
   const a=1+Math.floor(Math.random()*gMAX),b=1+Math.floor(Math.random()*gMAX);
   gTarget=[a,b];gClear();
-  gPackets(a,b);
+  gRect(a,b);
   $('gEq').innerHTML=eqHTML(a,'×',b,null);
-  $('gHint').textContent='Tyle: '+a+' '+pl(a,['pakiet','pakiety','pakietów'])+' po '+b+'. Znajdź to pole na tabliczce!';
+  $('gHint').textContent='Policz pole: '+a+' '+pl(a,['rząd','rzędy','rzędów'])+' po '+b+'. Wybierz wynik!';
+  makeAnswers($('gAns'),a*b,()=>{
+    if(gLock)return;gLock=true;$('gAns').innerHTML='';
+    $('gHint').textContent='Sprawdźmy — policzmy pole!';
+    gShow(a,b,null,()=>{
+      $('gEq').innerHTML=eqHTML(a,'×',b,a*b,true);
+      $('gHint').textContent='Masz gwiazdkę!';
+      addStar();setTimeout(gQuizNext,2200);
+    });
+  },()=>{$('gHint').textContent='Prawie! Policz rzędy po kolei — '+a+' po '+b+'.'});
 }
 function setGMode(m){
   gMode=m;gAnim++;
