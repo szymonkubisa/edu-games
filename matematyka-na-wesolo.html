@@ -298,8 +298,8 @@ function makeBasket(parent,rampIdx,count,animate){
 function makeAnswers(container,correct,onCorrect,wrongHint){
   container.innerHTML='';
   const opts=new Set([correct]);
-  while(opts.size<3){
-    const d=correct+[1,-1,2,-2,3,-3][Math.floor(Math.random()*6)];
+  while(opts.size<4){
+    const d=correct+[1,-1,2,-2,3,-3,4,-4][Math.floor(Math.random()*8)];
     if(d>=0)opts.add(d);
   }
   [...opts].sort(()=>Math.random()-.5).forEach(v=>{
