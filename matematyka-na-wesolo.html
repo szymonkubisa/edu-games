@@ -66,10 +66,6 @@ a.home:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .opSign{font-size:40px;font-weight:700;color:#6B5E8E;padding:0 4px}
 .basket{border-radius:18px;padding:12px;position:relative;border:3px solid transparent}
 .basket .items{display:grid;gap:4px;justify-content:center}
-.basket .badge{
-  position:absolute;right:-8px;bottom:-8px;color:#fff;font-size:14px;font-weight:700;
-  border-radius:999px;padding:2px 10px;opacity:0;border:2px solid #fff;
-}
 .item{font-size:30px;line-height:38px;text-align:center;opacity:0;transition:opacity .2s,transform .2s,filter .2s}
 .item.shown{opacity:1}
 .item.gone{opacity:.18;filter:grayscale(1);transform:scale(.65)}
@@ -289,9 +285,6 @@ function makeBasket(parent,rampIdx,count,animate){
   inner.className='items';
   inner.style.gridTemplateColumns='repeat('+Math.min(count,5)+',38px)';
   card.appendChild(inner);
-  const badge=document.createElement('div');
-  badge.className='badge';badge.style.background=P.m;
-  card.appendChild(badge);
   parent.appendChild(card);
   const items=[];
   for(let j=0;j<count;j++){
@@ -300,7 +293,7 @@ function makeBasket(parent,rampIdx,count,animate){
     it.textContent=T().em;
     inner.appendChild(it);items.push(it);
   }
-  return {card,badge,items,P};
+  return {card,items,P};
 }
 function makeAnswers(container,correct,onCorrect,wrongHint){
   container.innerHTML='';
@@ -361,12 +354,11 @@ function renderMul(animate,done){
   const slots=[];
   for(let i=0;i<kg;i++){
     const b=makeBasket(board,i,kk,animate);
-    b.items.forEach((it,j)=>slots.push({it,badge:b.badge,i,j}));
+    b.items.forEach(it=>slots.push({it}));
   }
   if(!animate||REDUCED){
     slots.forEach(s=>{
       s.it.classList.add('shown');
-      if(s.j===kk-1){s.badge.style.opacity=1;s.badge.textContent=(s.i+1)*kk}
     });
     if(done)done();return;
   }
@@ -377,7 +369,6 @@ function renderMul(animate,done){
       s.it.classList.add('shown','pop');
       blipUp(idx+1);
       $('kEq').innerHTML=eqHTML(kg,'×',kk,idx+1);
-      if(s.j===kk-1){s.badge.style.opacity=1;s.badge.textContent=(s.i+1)*kk}
       if(idx===total-1&&done)done();
     },idx*delay);
   });
@@ -436,11 +427,11 @@ function renderAdd(animate,done){
   board.appendChild(plus);
   const b2=makeBasket(board,1,ab,animate);
   const slots=[
-    ...b1.items.map((it,j)=>({it,badge:b1.badge,end:j===aa-1,sum:aa})),
-    ...b2.items.map((it,j)=>({it,badge:b2.badge,end:j===ab-1,sum:ab}))
+    ...b1.items.map(it=>({it})),
+    ...b2.items.map(it=>({it}))
   ];
   if(!animate||REDUCED){
-    slots.forEach(s=>{s.it.classList.add('shown');if(s.end){s.badge.style.opacity=1;s.badge.textContent=s.sum}});
+    slots.forEach(s=>{s.it.classList.add('shown');});
     if(done)done();return;
   }
   const total=aa+ab,delay=Math.min(160,Math.max(60,2600/total));
@@ -450,7 +441,6 @@ function renderAdd(animate,done){
       s.it.classList.add('shown','pop');
       blipUp(idx+1);
       $('aEq').innerHTML=eqHTML(aa,'+',ab,idx+1);
-      if(s.end){s.badge.style.opacity=1;s.badge.textContent=s.sum}
       if(idx===total-1&&done)done();
     },idx*delay);
   });
@@ -506,10 +496,8 @@ function renderSub(animate,preGone,done){
   const board=$('sBoard');board.innerHTML='';
   const b=makeBasket(board,2,sm,false);
   b.items.forEach(it=>it.classList.add('shown'));
-  b.badge.style.opacity=1;b.badge.textContent=sm;
   if(preGone){
     for(let i=0;i<sz;i++)b.items[sm-1-i].classList.add('gone');
-    b.badge.textContent=sm-sz;
     if(done)done();return;
   }
   if(!animate||REDUCED){if(done)done();return}
@@ -519,7 +507,6 @@ function renderSub(animate,preGone,done){
       b.items[sm-i].classList.add('gone');
       blipDown(i);
       $('sEq').innerHTML=eqHTML(sm,'−',i,sm-i);
-      b.badge.textContent=sm-i;
       if(i===sz&&done)done();
     },600+i*550);
   }
