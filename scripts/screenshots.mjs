@@ -1,10 +1,12 @@
 /**
  * Regenerates the README screenshots from the built app.
  *   npm run build && npm run shots
+ * Starts its own preview server unless SHOT_BASE points at a running one.
  * Progress is seeded so the shots show a used app rather than an empty one.
  */
 import { chromium } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
 
 const BASE = process.env.SHOT_BASE || 'http://127.0.0.1:4599';
 const OUT = 'docs/screenshots';
@@ -20,8 +22,33 @@ const SEED = {
   facts: {}
 };
 
+/** Boots `npm run preview` and waits for it to answer, unless one is already up. */
+async function startServer() {
+  if (process.env.SHOT_BASE) return null;
+  if (await reachable()) return null;
+  const child = spawn('npm', ['run', 'preview'], { stdio: ['ignore', 'pipe', 'pipe'] });
+  const since = Date.now();
+  while (Date.now() - since < 30_000) {
+    if (child.exitCode != null) throw new Error('preview server exited before it was ready');
+    if (await reachable()) return child;
+    await new Promise(r => setTimeout(r, 250));
+  }
+  child.kill();
+  throw new Error(`preview server never answered on ${BASE}`);
+}
+
+async function reachable() {
+  try {
+    const res = await fetch(`${BASE}/index.html`, { signal: AbortSignal.timeout(1500) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 await mkdir(OUT, { recursive: true });
 
+const server = await startServer();
 const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM_PATH || undefined });
 
 /** Clicks a stepper until it reads `target`, so shots are reproducible. */
@@ -126,3 +153,4 @@ await shot('phone-reading', {
 });
 
 await browser.close();
+server?.kill();
