@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gry na wesoło">
+  <rect width="64" height="64" rx="16" fill="#F6F1FF"/>
+  <rect x="5" y="5" width="54" height="54" rx="13" fill="none" stroke="#3B2E58" stroke-width="4"/>
+  <circle cx="22" cy="24" r="9" fill="#2BB58A"/>
+  <circle cx="42" cy="24" r="9" fill="#F4764C"/>
+  <path d="M14 42h36" stroke="#8B7BE8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M32 36v12" stroke="#8B7BE8" stroke-width="6" stroke-linecap="round"/>
+</svg>

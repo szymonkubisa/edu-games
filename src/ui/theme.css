@@ -1,0 +1,198 @@
+/* ==========================================================================
+   Shared design system. Previously copy-pasted into all three pages.
+   ========================================================================== */
+
+/* Variable font, 500-700, self-hosted: no third-party request from a
+   children's app, and the typeface survives going offline. */
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('./fonts/baloo2-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url('./fonts/baloo2-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+
+  --ink: #3B2E58;
+  --muted: #645A82;          /* 5.7:1 on --bg, 6.3:1 on --card */
+  --bg: #F6F1FF;
+  --card: #FFFFFF;
+  --line: #D9CFEF;
+
+  --teal: #2BB58A;   --teal-l: #DDF5EC;   --teal-d: #0E6E4F;
+  --coral: #F4764C;  --coral-l: #FDE7DE;  --coral-d: #A03D1E;
+  --sun: #F0A11F;    --sun-l: #FCEFD6;    --sun-d: #8A5A0A;
+  --pink: #EE6FA4;   --pink-l: #FCE3EE;
+  --violet: #8B7BE8; --violet-l: #EBE7FC; --violet-d: #4A3DB0;
+  --red: #E24B4A;    --red-l: #FADCDC;
+  --green: #3F8E1F;
+
+  --radius: 16px;
+  --radius-lg: 24px;
+  --tap: 44px;               /* minimum comfortable touch target */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Baloo 2', 'Comic Sans MS', 'Chalkboard SE', ui-rounded, system-ui, sans-serif;
+  font-weight: 500;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+           max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  /* A child resting a palm on the screen should not pull-to-refresh mid-question. */
+  overscroll-behavior-y: contain;
+}
+
+.wrap { max-width: 760px; margin: 0 auto; }
+
+/* ---------- header ---------- */
+header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px; flex-wrap: wrap;
+}
+h1 { font-size: clamp(22px, 5vw, 30px); font-weight: 700; flex: 1; min-width: 180px; }
+
+.counter {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 20px; font-weight: 700;
+  border-radius: 999px; padding: 4px 14px; min-height: 36px;
+  background: var(--sun-l); border: 3px solid var(--sun); color: var(--sun-d);
+  white-space: nowrap;
+}
+.counter.practice { background: var(--violet-l); border-color: var(--violet); color: var(--violet-d); }
+
+/* ---------- buttons ---------- */
+button {
+  font-family: inherit; font-size: 16px; font-weight: 700; color: var(--ink);
+  background: var(--card); border: 3px solid var(--ink); border-radius: var(--radius);
+  padding: 8px 16px; min-height: var(--tap); cursor: pointer;
+  box-shadow: 0 4px 0 var(--ink);
+  transition: transform .08s, box-shadow .08s;
+  user-select: none; touch-action: manipulation;
+}
+button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+button.on,
+button[aria-selected='true'],
+button[aria-pressed='true'] {
+  background: var(--violet-l); border-color: var(--violet);
+  box-shadow: 0 4px 0 var(--violet); color: var(--violet-d);
+}
+button.on:active, button[aria-selected='true']:active { box-shadow: 0 1px 0 var(--violet); }
+:where(button, a, [tabindex]):focus-visible {
+  outline: 3px dashed var(--violet); outline-offset: 3px;
+}
+
+.icon-btn {
+  width: var(--tap); height: var(--tap); padding: 0; font-size: 20px;
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+}
+.ghost-btn {
+  border-style: dashed; border-color: var(--line); box-shadow: none;
+  color: var(--muted); font-size: 14px; min-height: 40px;
+}
+.ghost-btn:active { transform: translateY(2px); box-shadow: none; }
+
+a.home {
+  text-decoration: none; color: var(--ink); flex: none;
+  background: var(--card); border: 3px solid var(--ink); border-radius: var(--radius);
+  box-shadow: 0 4px 0 var(--ink);
+  width: var(--tap); height: var(--tap);
+  display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+  touch-action: manipulation;
+}
+a.home:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+
+/* ---------- tabs ---------- */
+[role='tablist'] { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+[role='tablist'] button { font-size: 17px; padding: 9px 16px; }
+
+/* ---------- surfaces ---------- */
+.panel {
+  background: var(--card); border: 3px solid var(--ink); border-radius: var(--radius-lg);
+  padding: 18px; box-shadow: 0 6px 0 rgba(59, 46, 88, .18);
+}
+.panel.soft { border-color: var(--line); box-shadow: none; }
+.hidden { display: none !important; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ---------- progress ---------- */
+.dots { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--card); border: 3px solid var(--line);
+}
+.dot.done { background: var(--sun); border-color: var(--sun); }
+.streak { font-size: 15px; font-weight: 700; color: var(--muted); }
+.streak.hot { color: var(--coral); }
+
+/* ---------- badge toast ---------- */
+.toast-layer {
+  position: fixed; left: 0; right: 0; z-index: 200;
+  top: max(10px, env(safe-area-inset-top));
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  pointer-events: none; padding: 0 12px;
+}
+.toast {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 3px solid var(--violet); border-radius: 999px;
+  box-shadow: 0 6px 0 rgba(139, 123, 232, .35);
+  padding: 8px 18px; font-weight: 700; font-size: 17px; color: var(--violet-d);
+  max-width: 100%;
+}
+.toast .em { font-size: 26px; }
+
+/* ---------- animations ---------- */
+@keyframes pop { 0% { transform: scale(.2); opacity: 0 } 70% { transform: scale(1.25); opacity: 1 } 100% { transform: scale(1); opacity: 1 } }
+@keyframes wob { 0%, 100% { transform: rotate(0) } 25% { transform: rotate(-6deg) } 75% { transform: rotate(6deg) } }
+@keyframes shk { 0%, 100% { transform: translateX(0) } 25% { transform: translateX(-6px) } 75% { transform: translateX(6px) } }
+@keyframes fall { to { transform: translateY(110vh) rotate(540deg) } }
+@keyframes toastIn { from { transform: translateY(-16px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+.pop { animation: pop .3s ease-out both; }
+.wob { animation: wob .5s ease-in-out; }
+.shk { animation: shk .28s ease-in-out 2; }
+.toast { animation: toastIn .25s ease-out both; }
+
+.confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 150; }
+.confetti {
+  position: fixed; top: -40px; font-size: 26px;
+  pointer-events: none; animation: fall linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------- phones ----------
+   The header carries a lot (home, title, language, sound, two counters). Below
+   ~430px it gets its own row so the controls stay on one line under it. */
+@media (max-width: 430px) {
+  header { gap: 8px; margin-bottom: 10px; }
+  h1 { font-size: 20px; min-width: calc(100% - 54px); }
+  .counter { font-size: 17px; padding: 2px 10px; min-height: 34px; }
+  [role='tablist'] { gap: 6px; }
+  [role='tablist'] button { font-size: 15px; padding: 8px 11px; }
+  .toast { font-size: 15px; padding: 7px 14px; }
+}

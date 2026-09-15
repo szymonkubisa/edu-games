@@ -1,5 +1,11 @@
 # edu-games — technical analysis & roadmap to public release
 
+> **Status: acted on.** This is the audit the rewrite came from, kept as the record of
+> what was wrong and why the current architecture looks the way it does. Every finding
+> in §8 has been addressed — see the table at the end of this file for where each one
+> landed. The "today" described in §1 is the pre-rewrite single-file version, which you
+> can still read at tag `v0-single-file` or in the history before the refactor commit.
+
 Scope: architecture, correctness, UX/UI, accessibility, test strategy, publishing readiness.
 Everything marked **[verified]** was reproduced in a headless Chromium run against the current
 `main`, not inferred from reading the source.
@@ -285,3 +291,36 @@ make it maintainable by someone other than you. 8 is the one that makes it *good
 | 12 | `.DS_Store` committed, one-line README (§5) | Low | trivial |
 | 13 | macOS-only `.claude/launch.json` (§5) | Low | trivial |
 | 14 | Dead code, 3-vs-4 answer inconsistency (§2.3, §3.4) | Low | trivial |
+
+---
+
+## 9. Outcome
+
+Every item above was implemented. Where the finding was verified by a reproduction, the
+fix is now pinned by a regression test that fails against the old behaviour.
+
+| # | Finding | Where it landed | Pinned by |
+|---|---|---|---|
+| 1 | No `LICENSE` | `LICENSE` (MIT) | — |
+| 2 | Stale timers reroll the question | `src/core/schedule.js`; every mode owns a scheduler and `suspend()`s on tab change | `schedule.test.js`, `regressions.spec.js` |
+| 3 | Maths ignores the language setting | `src/content/math.js`, `src/core/i18n.js` | `regressions.spec.js` ×3 |
+| 4 | Farmable stars | separate `practice` currency in the store; badges key off stars only | `store.test.js`, `regressions.spec.js` |
+| 5 | Grid inaccessible, no live regions | `role="grid"` of `<button>`s with roving tabindex + arrow keys; `role="status"` regions | `a11y.spec.js` (axe, 0 violations), `regressions.spec.js` |
+| 6 | No tests, no CI | 109 unit + 78 E2E; `.github/workflows/ci.yml` | — |
+| 7 | 3.4 s unskippable delay | tap the board to skip the replay; follow-on delay cut to 1200 ms | `regressions.spec.js` (asserts < 2.5 s) |
+| 8 | Badge unlocks invisible in-game | `src/ui/toast.js` + `createStarCounter` reads `newBadges` | `regressions.spec.js` |
+| 9 | Triplicated CSS/audio/helpers | `src/ui/theme.css`, `src/core/audio.js`, `src/core/dom.js`; `countingMode.js` collapses three modes into one | `ui.test.js` |
+| 10 | No favicon/OG/manifest/offline | `public/icons/`, `public/manifest.webmanifest`, `public/sw.js` | — |
+| 11 | No difficulty adaptation | `src/games/math/facts.js`, per-fact `{seen, wrong}` in the store | `facts.test.js` |
+| 12 | `.DS_Store`, one-line README | `.gitignore`, full `README.md` with screenshots | — |
+| 13 | macOS-only launch config | `.claude/launch.json` now runs `npm` | — |
+| 14 | Dead code, 3-vs-4 answers | removed; reading quiz now offers 4 options like maths | `regressions.spec.js` |
+
+Two things found during the rewrite, not in the original audit:
+
+- **Distractor spread.** `answerOptions` drew offsets from a flat `±1…±10` pool, so an
+  answer of 10 could appear against 0 and 20 — dismissible without counting. Offsets are
+  now banded nearest-first (`facts.test.js`).
+- **Steppers at 40% opacity.** The explore controls were dimmed rather than hidden during
+  a quiz, which failed AA contrast at 1.83:1. They are hidden now — an unusable control is
+  noise, not information.
