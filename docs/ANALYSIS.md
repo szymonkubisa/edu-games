@@ -4,7 +4,7 @@
 > what was wrong and why the current architecture looks the way it does. Every finding
 > in §8 has been addressed — see the table at the end of this file for where each one
 > landed. The "today" described in §1 is the pre-rewrite single-file version, which you
-> can still read at tag `v0-single-file` or in the history before the refactor commit.
+> can still read at commit [`828ec42`](../../commit/828ec42) — `git show 828ec42:matematyka-na-wesolo.html`.
 
 Scope: architecture, correctness, UX/UI, accessibility, test strategy, publishing readiness.
 Everything marked **[verified]** was reproduced in a headless Chromium run against the current
