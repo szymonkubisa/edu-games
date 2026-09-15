@@ -49,3 +49,14 @@ greyed out) and its hint copy. See how `add`, `sub` and `mul` are wired in
 
 Match the surrounding code. Comments explain *why*, not *what* — several in this codebase
 record a bug that the shape of the code now prevents; please keep that habit.
+
+## Deployment
+
+Every push to `main` is deployed by the repository's Vercel integration; pull requests get a
+preview URL automatically. There is no deploy workflow in `.github/workflows/` — the build is
+plain static files in `dist/`, so any static host works.
+
+To publish on GitHub Pages instead, add a workflow that runs `npm ci && npm run build` and
+feeds `dist/` to `actions/upload-pages-artifact` + `actions/deploy-pages`, and first set
+**Settings → Pages → Source: GitHub Actions**. Without that setting the deploy step fails with
+`Get Pages site failed`, which is why the workflow that used to live here was removed.

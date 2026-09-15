@@ -61,7 +61,7 @@ async function setStepper(page, section, which, target) {
   }
 }
 
-async function shot(name, { url, viewport = DESKTOP, lang = 'pl', prepare, full = false }) {
+async function shot(name, { url, viewport = DESKTOP, lang = 'en', prepare, full = false }) {
   const context = await browser.newContext({ viewport, deviceScaleFactor: 2 });
   await context.addInitScript(
     seed => localStorage.setItem('eduGames.v2', JSON.stringify(seed)),
@@ -103,9 +103,9 @@ await shot('math-grid', {
   }
 });
 
-await shot('math-en', {
+await shot('math-pl', {
   url: '/math.html',
-  lang: 'en',
+  lang: 'pl',
   async prepare(page) {
     await page.locator('[data-tab="add"]').click();
     await page.waitForTimeout(300);
@@ -116,6 +116,7 @@ await shot('reading-pick', { url: '/reading.html' });
 
 await shot('reading-story', {
   url: '/reading.html',
+  lang: 'pl',
   async prepare(page) {
     for (const group of ['h', 'f', 'p', 't']) {
       await page.locator(`[data-chips="${group}"] .chip`).nth(1).click();
