@@ -10,7 +10,7 @@ test.describe('menu', () => {
   });
 
   test('reset asks first and then clears progress', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await answerCorrectly(page, '#secMul');
     await skipReplayAndWait(page, '#secMul');
 
@@ -30,7 +30,7 @@ test.describe('menu', () => {
 
 test.describe('maths', () => {
   test('a correct answer awards a star that survives navigation', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await answerCorrectly(page, '#secMul');
     await skipReplayAndWait(page, '#secMul');
     expect((await progress(page)).stars.math).toBe(1);
@@ -41,7 +41,7 @@ test.describe('maths', () => {
   });
 
   test('a wrong answer costs nothing and lets the child retry', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     const a = Number(await page.locator('#secMul [data-val="a"]').innerText());
     const b = Number(await page.locator('#secMul [data-val="b"]').innerText());
     const wrong = page.locator('#secMul [data-ans] button', { hasNotText: new RegExp(`^${a * b}$`) }).first();
@@ -55,7 +55,7 @@ test.describe('maths', () => {
   });
 
   test('every operation offers four answers and one is right', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     for (const [tab, section] of [['add', '#secAdd'], ['sub', '#secSub'], ['mul', '#secMul']]) {
       await page.locator(`[data-tab="${tab}"]`).click();
       await expect(page.locator(`${section} [data-ans] button`)).toHaveCount(4);
@@ -65,7 +65,7 @@ test.describe('maths', () => {
   });
 
   test('the round fills up and ends with a celebration', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await expect(page.locator('.dot')).toHaveCount(10);
     for (let i = 0; i < 10; i++) {
       await answerCorrectly(page, '#secMul');
@@ -78,7 +78,7 @@ test.describe('maths', () => {
   });
 
   test('explore mode lets the child drive the numbers', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await page.locator('#secMul [data-modeswitch="explore"]').click();
     const before = Number(await page.locator('#secMul [data-val="a"]').innerText());
     await page.locator('#secMul [data-step="a"][data-d="1"]').click();
@@ -87,12 +87,12 @@ test.describe('maths', () => {
   });
 
   test('the steppers are inert during a quiz', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await expect(page.locator('#secMul [data-step="a"][data-d="1"]')).toBeDisabled();
   });
 
   test('the area grid asks for the product and accepts it', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await page.locator('[data-tab="grid"]').click();
     await expect(page.locator('.cell')).toHaveCount(100);
     const eq = await page.locator('#secGrid [data-eq]').innerText();
@@ -105,7 +105,7 @@ test.describe('maths', () => {
 
 test.describe('reading', () => {
   test('a chosen cast produces a readable story and a four-question quiz', async ({ page }) => {
-    await page.goto('/czytanie-na-wesolo.html');
+    await page.goto('/reading.html');
     await expect(page.locator('[data-go]')).toBeDisabled();
     for (const group of ['h', 'f', 'p', 't']) {
       await page.locator(`[data-chips="${group}"] .chip`).first().click();
@@ -120,7 +120,7 @@ test.describe('reading', () => {
   });
 
   test('answering all four questions earns four stars and reports the story total', async ({ page }) => {
-    await page.goto('/czytanie-na-wesolo.html');
+    await page.goto('/reading.html');
     for (const group of ['h', 'f', 'p', 't']) {
       await page.locator(`[data-chips="${group}"] .chip`).first().click();
     }
@@ -142,7 +142,7 @@ test.describe('reading', () => {
   });
 
   test('syllable mode splits words and survives a reload', async ({ page }) => {
-    await page.goto('/czytanie-na-wesolo.html');
+    await page.goto('/reading.html');
     await page.locator('[data-tab="words"]').click();
     await expect(page.locator('.syl0')).toHaveCount(0);
     await page.locator('[data-syllables]').click();
@@ -152,7 +152,7 @@ test.describe('reading', () => {
   });
 
   test('word matching awards a verified star', async ({ page }) => {
-    await page.goto('/czytanie-na-wesolo.html');
+    await page.goto('/reading.html');
     await page.locator('[data-tab="words"]').click();
     const options = page.locator('[data-word-options] .opt');
     await expect(options).toHaveCount(4);

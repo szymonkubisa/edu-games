@@ -11,7 +11,7 @@ test.describe('regressions', () => {
     // setTimeout that nothing cancelled. Switching tabs generated a new
     // question immediately, then the orphan fired and changed it again — the
     // problem moved under a child who was still counting.
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await answerCorrectly(page, '#secMul');
     await page.locator('[data-tab="add"]').click();
     await page.locator('[data-tab="mul"]').click();
@@ -23,7 +23,7 @@ test.describe('regressions', () => {
 
   test('the count-along replay can be skipped', async ({ page }) => {
     // Was: 3.4 s from a correct tap to the next question, with no way past it.
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     const started = Date.now();
     await answerCorrectly(page, '#secMul');
     await skipReplayAndWait(page, '#secMul');
@@ -35,7 +35,7 @@ test.describe('regressions', () => {
     // hardcoded Polish, so switching to EN and tapping Maths landed you in
     // Polish.
     await setLang(page, 'en');
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await expect(page.locator('[data-title]')).toHaveText('Fun Maths');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('#secMul [data-hint]')).toContainText('altogether');
@@ -43,7 +43,7 @@ test.describe('regressions', () => {
   });
 
   test('the language switch reaches every maths string, then switches back', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await page.locator('[data-lang]').click();
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await page.locator('[data-tab="grid"]').click();
@@ -66,7 +66,7 @@ test.describe('regressions', () => {
   test('self-graded reading cannot mint badges', async ({ page }) => {
     // Was: "✅ Umiem!" awarded a star with no verification — 5 taps, 5 stars,
     // so the 100-star crown was ~100 taps away and meant nothing.
-    await page.goto('/czytanie-na-wesolo.html');
+    await page.goto('/reading.html');
     await page.locator('[data-tab="cards"]').click();
     for (let i = 0; i < 5; i++) {
       await page.locator('[data-card-good]').click();
@@ -85,7 +85,7 @@ test.describe('regressions', () => {
     // whatever the count was when the page froze.
     await page.goto('/index.html');
     await expect(page.locator('#starN')).toHaveText('0');
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await answerCorrectly(page, '#secMul');
     await skipReplayAndWait(page, '#secMul');
     await page.goBack();
@@ -94,7 +94,7 @@ test.describe('regressions', () => {
 
   test('badge unlocks are announced in the game, not only on the menu', async ({ page }) => {
     // Was: the store returned `newBadges` and nothing read it.
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await answerCorrectly(page, '#secMul');
     await expect(page.locator('.toast')).toContainText(/Pierwsza gwiazdka|First star/, { timeout: 8000 });
   });
@@ -102,7 +102,7 @@ test.describe('regressions', () => {
   test('the grid is keyboard operable', async ({ page }) => {
     // Was: 100 `<div>`s with click handlers — zero focusable, invisible to
     // screen readers.
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await page.locator('[data-tab="grid"]').click();
     await page.locator('#secGrid [data-modeswitch="explore"]').click();
 
@@ -118,15 +118,15 @@ test.describe('regressions', () => {
   test('the grid does not invite taps it ignores during a quiz', async ({ page }) => {
     // Was: cells kept cursor:pointer and hover guides in quiz mode, but the
     // click handler returned early — tapping did nothing, silently.
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await page.locator('[data-tab="grid"]').click();
     await expect(page.locator('.cell').first()).toBeDisabled();
   });
 
   test('both games offer the same number of answers', async ({ page }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await expect(page.locator('#secMul [data-ans] button')).toHaveCount(4);
-    await page.goto('/czytanie-na-wesolo.html');
+    await page.goto('/reading.html');
     await page.locator('[data-tab="words"]').click();
     await expect(page.locator('[data-word-options] .opt')).toHaveCount(4);
   });
@@ -140,7 +140,7 @@ test.describe('regressions', () => {
         JSON.stringify({ v: 2, stars: { math: 40, reading: 7 }, settings: {} })
       )
     );
-    await page.goto('/czytanie-na-wesolo.html');
+    await page.goto('/reading.html');
     for (const group of ['h', 'f', 'p', 't']) {
       await page.locator(`[data-chips="${group}"] .chip`).first().click();
     }
@@ -161,7 +161,7 @@ test.describe('regressions', () => {
   });
 
   test('progress survives a reload and a second tab does not clobber it', async ({ page, context }) => {
-    await page.goto('/matematyka-na-wesolo.html');
+    await page.goto('/math.html');
     await answerCorrectly(page, '#secMul');
     await skipReplayAndWait(page, '#secMul');
 

@@ -9,8 +9,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         menu: resolve(import.meta.dirname, 'index.html'),
-        math: resolve(import.meta.dirname, 'matematyka-na-wesolo.html'),
-        reading: resolve(import.meta.dirname, 'czytanie-na-wesolo.html')
+        math: resolve(import.meta.dirname, 'math.html'),
+        reading: resolve(import.meta.dirname, 'reading.html')
       }
     }
   },

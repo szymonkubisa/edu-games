@@ -316,6 +316,10 @@ fix is now pinned by a regression test that fails against the old behaviour.
 | 13 | macOS-only launch config | `.claude/launch.json` now runs `npm` | — |
 | 14 | Dead code, 3-vs-4 answers | removed; reading quiz now offers 4 options like maths | `regressions.spec.js` |
 
+The two game pages were also renamed from `matematyka-na-wesolo.html` and
+`czytanie-na-wesolo.html` to `math.html` and `reading.html`. The filenames above are the
+pre-rename ones; the page titles and all content stay Polish, only the URLs are neutral.
+
 Two things found during the rewrite, not in the original audit:
 
 - **Distractor spread.** `answerOptions` drew offsets from a flat `±1…±10` pool, so an

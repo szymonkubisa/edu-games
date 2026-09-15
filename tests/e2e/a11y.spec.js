@@ -3,8 +3,8 @@ import AxeBuilder from '@axe-core/playwright';
 
 const PAGES = [
   ['menu', '/index.html'],
-  ['maths', '/matematyka-na-wesolo.html'],
-  ['reading', '/czytanie-na-wesolo.html']
+  ['maths', '/math.html'],
+  ['reading', '/reading.html']
 ];
 
 /** Colour contrast is measured off the rendered pixels, so a scan that races a
@@ -51,7 +51,7 @@ for (const [name, url] of PAGES) {
 }
 
 test('maths: the deep tabs and the grid stay clean', async ({ page }) => {
-  await page.goto('/matematyka-na-wesolo.html');
+  await page.goto('/math.html');
   for (const tab of ['add', 'sub', 'grid']) {
     await page.locator(`[data-tab="${tab}"]`).click();
     expect(describeViolations(await scan(page)), `tab ${tab}`).toEqual([]);
@@ -59,7 +59,7 @@ test('maths: the deep tabs and the grid stay clean', async ({ page }) => {
 });
 
 test('reading: every mode stays clean', async ({ page }) => {
-  await page.goto('/czytanie-na-wesolo.html');
+  await page.goto('/reading.html');
   for (const tab of ['words', 'cards', 'fun']) {
     await page.locator(`[data-tab="${tab}"]`).click();
     expect(describeViolations(await scan(page)), `tab ${tab}`).toEqual([]);
@@ -67,7 +67,7 @@ test('reading: every mode stays clean', async ({ page }) => {
 });
 
 test('reading: the story pages stay clean', async ({ page }) => {
-  await page.goto('/czytanie-na-wesolo.html');
+  await page.goto('/reading.html');
   for (const group of ['h', 'f', 'p', 't']) {
     await page.locator(`[data-chips="${group}"] .chip`).first().click();
   }

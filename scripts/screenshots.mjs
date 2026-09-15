@@ -56,7 +56,7 @@ async function shot(name, { url, viewport = DESKTOP, lang = 'pl', prepare, full 
 await shot('menu', { url: '/index.html' });
 
 await shot('math-multiplication', {
-  url: '/matematyka-na-wesolo.html',
+  url: '/math.html',
   async prepare(page) {
     await page.locator('#secMul [data-modeswitch="explore"]').click();
     await setStepper(page, '#secMul', 'a', 3);
@@ -66,7 +66,7 @@ await shot('math-multiplication', {
 });
 
 await shot('math-grid', {
-  url: '/matematyka-na-wesolo.html',
+  url: '/math.html',
   viewport: { width: 900, height: 1180 },
   async prepare(page) {
     await page.locator('[data-tab="grid"]').click();
@@ -77,7 +77,7 @@ await shot('math-grid', {
 });
 
 await shot('math-en', {
-  url: '/matematyka-na-wesolo.html',
+  url: '/math.html',
   lang: 'en',
   async prepare(page) {
     await page.locator('[data-tab="add"]').click();
@@ -85,10 +85,10 @@ await shot('math-en', {
   }
 });
 
-await shot('reading-pick', { url: '/czytanie-na-wesolo.html' });
+await shot('reading-pick', { url: '/reading.html' });
 
 await shot('reading-story', {
-  url: '/czytanie-na-wesolo.html',
+  url: '/reading.html',
   async prepare(page) {
     for (const group of ['h', 'f', 'p', 't']) {
       await page.locator(`[data-chips="${group}"] .chip`).nth(1).click();
@@ -101,7 +101,7 @@ await shot('reading-story', {
 });
 
 await shot('reading-words', {
-  url: '/czytanie-na-wesolo.html',
+  url: '/reading.html',
   async prepare(page) {
     await page.locator('[data-tab="words"]').click();
     await page.waitForTimeout(300);
@@ -109,7 +109,7 @@ await shot('reading-words', {
 });
 
 await shot('phone-math', {
-  url: '/matematyka-na-wesolo.html',
+  url: '/math.html',
   viewport: PHONE,
   async prepare(page) {
     await page.waitForTimeout(300);
@@ -117,7 +117,7 @@ await shot('phone-math', {
 });
 
 await shot('phone-reading', {
-  url: '/czytanie-na-wesolo.html',
+  url: '/reading.html',
   viewport: PHONE,
   async prepare(page) {
     await page.locator('[data-tab="fun"]').click();
