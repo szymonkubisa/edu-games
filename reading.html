@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" data-description content="Historyjki, które dziecko samo układa, sylaby, słowa i śmieszne zdania — nauka czytania dla dzieci 5-8 lat. Bez reklam i bez kont.">
+<meta name="theme-color" content="#F6F1FF">
+<link rel="icon" href="./icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Czytanie na wesoło</title>
+<script type="module" src="/src/entries/reading.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="./index.html" data-home aria-label="Menu">🏠</a>
+    <h1 data-title>📖 Czytanie na wesoło</h1>
+    <button class="icon-btn" data-lang type="button">EN</button>
+    <button data-syllables type="button" aria-pressed="false">Sy-la-by</button>
+    <button class="icon-btn" data-sound type="button">🔊</button>
+    <span class="counter" id="starBox">
+      <span aria-hidden="true">⭐</span>
+      <span id="starN">0</span>
+      <span class="visually-hidden" data-stars-label>gwiazdki</span>
+    </span>
+    <span class="counter practice" id="practiceBox">
+      <span aria-hidden="true">📚</span>
+      <span id="practiceN">0</span>
+      <span class="visually-hidden" data-practice-label>przeczytane</span>
+    </span>
+  </header>
+
+  <main>
+    <div class="tabs" data-tabs aria-label="Wybierz zabawę">
+      <button data-tab="story" data-panel="secStory" type="button">📖 Historyjka</button>
+      <button data-tab="words" data-panel="secWords" type="button">🔤 Słowa</button>
+      <button data-tab="cards" data-panel="secCards" type="button">🗣️ Czytam</button>
+      <button data-tab="fun" data-panel="secFun" type="button">😄 Śmieszne</button>
+    </div>
+
+    <!-- ===== HISTORYJKA ===== -->
+    <section id="secStory" data-section="story">
+      <div class="card" data-page="pick">
+        <p class="pickLabel" data-lbl="hero"></p>
+        <div class="chips" data-chips="h" role="group"></div>
+        <p class="pickLabel" data-lbl="friend"></p>
+        <div class="chips" data-chips="f" role="group"></div>
+        <p class="pickLabel" data-lbl="place"></p>
+        <div class="chips" data-chips="p" role="group"></div>
+        <p class="pickLabel" data-lbl="thing"></p>
+        <div class="chips" data-chips="t" role="group"></div>
+        <button class="goBtn" data-go type="button" disabled></button>
+      </div>
+
+      <div class="card hidden" data-page="read">
+        <p class="progress" data-progress></p>
+        <div class="done" data-done></div>
+        <p class="now" data-now></p>
+        <div class="readRow">
+          <button class="readBtn" data-next type="button"></button>
+          <button data-tts type="button"></button>
+        </div>
+      </div>
+
+      <div class="card hidden" data-page="quiz">
+        <p class="q" data-question></p>
+        <div class="opts" data-options role="group"></div>
+        <p class="fb" data-feedback role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="card hidden" data-page="end" style="text-align:center">
+        <p style="font-size:64px;line-height:1.1" aria-hidden="true">🌟</p>
+        <p class="q" data-end-text></p>
+        <button class="goBtn" data-again type="button"></button>
+      </div>
+    </section>
+
+    <!-- ===== SŁOWA ===== -->
+    <section id="secWords" class="card hidden" data-section="words">
+      <p class="q" style="text-align:center" data-words-q></p>
+      <button class="emojiBig" data-word-emoji type="button"></button>
+      <div class="opts" data-word-options role="group"></div>
+      <p class="fb" style="text-align:center" data-word-feedback role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ===== CZYTAM ===== -->
+    <section id="secCards" class="card hidden" data-section="cards">
+      <p class="q" style="text-align:center" data-cards-q></p>
+      <p class="bigWord" data-card-word></p>
+      <div class="centerRow">
+        <button data-card-listen type="button"></button>
+      </div>
+      <div class="opts">
+        <button class="opt" data-card-good type="button"></button>
+        <button class="opt" data-card-bad type="button"></button>
+      </div>
+      <p class="fb" style="text-align:center" data-card-feedback role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ===== ŚMIESZNE ZDANIA ===== -->
+    <section id="secFun" class="card hidden" data-section="fun">
+      <p class="q" style="text-align:center" data-fun-q></p>
+      <p class="funSentence" data-fun-sentence></p>
+      <div class="centerRow">
+        <button data-fun-listen type="button"></button>
+      </div>
+      <div class="opts">
+        <button class="opt" data-fun-good type="button"></button>
+        <button class="opt" data-fun-new type="button"></button>
+      </div>
+      <p class="fb" style="text-align:center" data-fun-feedback role="status" aria-live="polite"></p>
+    </section>
+  </main>
+</div>
+</body>
+</html>

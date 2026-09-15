@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" data-description content="Dodawanie, odejmowanie, mnożenie i pole prostokąta — kolorowe gry matematyczne dla dzieci 5-8 lat. Bez reklam i bez kont.">
+<meta name="theme-color" content="#F6F1FF">
+<link rel="icon" href="./icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Matematyka na wesoło</title>
+<script type="module" src="/src/entries/math.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="./index.html" data-home aria-label="Menu">🏠</a>
+    <h1 data-title>Matematyka na wesoło</h1>
+    <button class="icon-btn" data-lang type="button">EN</button>
+    <button class="icon-btn" data-sound type="button">🔊</button>
+    <span class="counter" id="starBox">
+      <span aria-hidden="true">⭐</span>
+      <span id="starN">0</span>
+      <span class="visually-hidden" data-stars-label>gwiazdki</span>
+    </span>
+  </header>
+
+  <main>
+    <div class="themes" data-themes role="group" aria-label="Wybierz obrazek"></div>
+    <div class="roundbar" data-round></div>
+
+    <div class="tabs" data-tabs aria-label="Wybierz działanie">
+      <button data-tab="add" data-panel="secAdd" id="tabAdd" type="button">➕ Dodawanie</button>
+      <button data-tab="sub" data-panel="secSub" id="tabSub" type="button">➖ Odejmowanie</button>
+      <button data-tab="mul" data-panel="secMul" id="tabMul" type="button">✖️ Mnożenie</button>
+      <button data-tab="grid" data-panel="secGrid" id="tabGrid" type="button">🟪 Kwadrat</button>
+    </div>
+
+    <!-- ============ DODAWANIE ============ -->
+    <section id="secAdd" class="panel hidden" data-section="add">
+      <div class="bar">
+        <button data-modeswitch="explore" type="button">🔎 Odkrywaj</button>
+        <button data-modeswitch="quiz" class="on" type="button">⭐ Zagadka</button>
+      </div>
+      <div class="ctl hidden" data-ctl>
+        <div class="stepper">
+          <span class="lbl" data-lbl="a"></span>
+          <button data-step="a" data-d="-1" type="button">−</button>
+          <span class="val g" data-val="a">3</span>
+          <button data-step="a" data-d="1" type="button">+</button>
+        </div>
+        <div class="stepper">
+          <span class="lbl" data-lbl="b"></span>
+          <button data-step="b" data-d="-1" type="button">−</button>
+          <span class="val k" data-val="b">4</span>
+          <button data-step="b" data-d="1" type="button">+</button>
+        </div>
+      </div>
+      <p class="eq" data-eq></p>
+      <p class="hint" data-hint></p>
+      <div class="board" data-board></div>
+      <div class="ans" data-ans role="group"></div>
+      <p class="visually-hidden" data-status role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ============ ODEJMOWANIE ============ -->
+    <section id="secSub" class="panel hidden" data-section="sub">
+      <div class="bar">
+        <button data-modeswitch="explore" type="button">🔎 Odkrywaj</button>
+        <button data-modeswitch="quiz" class="on" type="button">⭐ Zagadka</button>
+      </div>
+      <div class="ctl hidden" data-ctl>
+        <div class="stepper">
+          <span class="lbl" data-lbl="a"></span>
+          <button data-step="a" data-d="-1" type="button">−</button>
+          <span class="val g" data-val="a">7</span>
+          <button data-step="a" data-d="1" type="button">+</button>
+        </div>
+        <div class="stepper">
+          <span class="lbl" data-lbl="b"></span>
+          <button data-step="b" data-d="-1" type="button">−</button>
+          <span class="val k" data-val="b">3</span>
+          <button data-step="b" data-d="1" type="button">+</button>
+        </div>
+      </div>
+      <p class="eq" data-eq></p>
+      <p class="hint" data-hint></p>
+      <div class="board" data-board></div>
+      <div class="ans" data-ans role="group"></div>
+      <p class="visually-hidden" data-status role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ============ MNOŻENIE ============ -->
+    <section id="secMul" class="panel" data-section="mul">
+      <div class="bar">
+        <button data-modeswitch="explore" type="button">🔎 Odkrywaj</button>
+        <button data-modeswitch="quiz" class="on" type="button">⭐ Zagadka</button>
+      </div>
+      <div class="ctl hidden" data-ctl>
+        <div class="stepper">
+          <span class="lbl" data-lbl="a"></span>
+          <button data-step="a" data-d="-1" type="button">−</button>
+          <span class="val g" data-val="a">3</span>
+          <button data-step="a" data-d="1" type="button">+</button>
+        </div>
+        <div class="stepper">
+          <span class="lbl" data-lbl="b"></span>
+          <button data-step="b" data-d="-1" type="button">−</button>
+          <span class="val k" data-val="b">4</span>
+          <button data-step="b" data-d="1" type="button">+</button>
+        </div>
+      </div>
+      <p class="eq" data-eq></p>
+      <p class="hint" data-hint></p>
+      <div class="board" data-board></div>
+      <div class="ans" data-ans role="group"></div>
+      <p class="visually-hidden" data-status role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ============ KWADRAT ============ -->
+    <section id="secGrid" class="panel hidden" data-section="grid">
+      <div class="bar">
+        <button data-modeswitch="explore" type="button">🔎 Odkrywaj</button>
+        <button data-modeswitch="quiz" class="on" type="button">⭐ Zagadka</button>
+        <button data-gridnum type="button">Licz: 1,2,3…</button>
+        <button data-gridmax type="button">Do 5</button>
+      </div>
+      <p class="eq" data-eq></p>
+      <p class="hint" data-hint></p>
+      <div class="grid" data-grid></div>
+      <div class="ans" data-ans role="group"></div>
+      <p class="visually-hidden" data-status role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ============ KONIEC RUNDY ============ -->
+    <section class="panel roundDone hidden" data-rounddone>
+      <span class="em" aria-hidden="true">🏅</span>
+      <p class="msg" data-rounddone-msg></p>
+      <button class="goBtn" data-rounddone-again type="button"></button>
+    </section>
+  </main>
+</div>
+</body>
+</html>

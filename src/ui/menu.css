@@ -1,0 +1,52 @@
+@import './theme.css';
+
+.games { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.game {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+  text-decoration: none; color: var(--ink);
+  background: var(--card); border: 4px solid var(--ink); border-radius: 28px;
+  padding: 26px 18px; box-shadow: 0 6px 0 rgba(59, 46, 88, .18);
+  transition: transform .12s, box-shadow .12s; touch-action: manipulation;
+}
+.game:hover { transform: translateY(-3px); }
+.game:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(59, 46, 88, .18); }
+.game .em { font-size: 72px; line-height: 1.1; }
+.game .name { font-size: clamp(20px, 4.5vw, 26px); font-weight: 700; }
+.game .sub { font-size: 15px; color: var(--muted); }
+.game .mine {
+  margin-top: 4px; font-size: 15px; font-weight: 700; color: var(--sun-d);
+  background: var(--sun-l); border-radius: 999px; padding: 2px 12px;
+}
+.game.math { border-color: var(--teal); box-shadow: 0 6px 0 rgba(43, 181, 138, .28); }
+.game.math:active { box-shadow: 0 2px 0 rgba(43, 181, 138, .28); }
+.game.read { border-color: var(--coral); box-shadow: 0 6px 0 rgba(244, 118, 76, .28); }
+.game.read:active { box-shadow: 0 2px 0 rgba(244, 118, 76, .28); }
+
+.panel { margin-top: 18px; }
+.panel h2 { font-size: 19px; font-weight: 700; margin-bottom: 12px; }
+.badges { display: flex; gap: 12px; flex-wrap: wrap; }
+.badge {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  width: 92px; text-align: center; padding: 10px 6px;
+  border-radius: 18px; border: 3px solid #E7E0F6; background: var(--bg);
+}
+.badge .em { font-size: 34px; line-height: 1; filter: grayscale(1); opacity: .35; }
+.badge.got { border-color: var(--violet); background: var(--violet-l); }
+.badge.got .em { filter: none; opacity: 1; }
+.badge .lbl { font-size: 12px; font-weight: 700; color: var(--muted); }
+
+.about { margin-top: 16px; font-size: 14px; color: var(--muted); text-align: center; }
+.foot { display: flex; justify-content: center; margin-top: 14px; }
+
+dialog.confirm {
+  border: 3px solid var(--ink); border-radius: var(--radius-lg); padding: 22px;
+  max-width: min(420px, calc(100vw - 32px)); color: var(--ink); background: var(--card);
+  box-shadow: 0 8px 0 rgba(59, 46, 88, .2);
+}
+dialog.confirm::backdrop { background: rgba(59, 46, 88, .45); }
+dialog.confirm h2 { font-size: 21px; margin-bottom: 8px; }
+dialog.confirm p { color: var(--muted); margin-bottom: 18px; }
+dialog.confirm .row { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+dialog.confirm .danger {
+  background: var(--red-l); border-color: var(--red); box-shadow: 0 4px 0 var(--red); color: #8E1F1F;
+}
