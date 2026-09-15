@@ -1,8 +1,10 @@
-# 🎈 Gry na wesoło — Fun Games
+# 🎈 Fun Games
 
-Maths and early-reading games for children roughly aged 5–8, in **Polish and English**.
-No ads, no accounts, no tracking, no analytics. Works offline. Progress lives in the
-browser on one device and never leaves it.
+Maths and early-reading games for children roughly aged 5–8. Fully bilingual: every screen,
+every story and the speech-synthesis voice switch between **English and Polish** with one tap.
+
+No ads, no accounts, no tracking, no analytics. Works offline. Progress lives in the browser
+on one device and never leaves it.
 
 Built for one six-year-old, then cleaned up enough to hand to anyone else's.
 
@@ -12,7 +14,7 @@ Built for one six-year-old, then cleaned up enough to hand to anyone else's.
 
 ## What's in it
 
-### ➗ Matematyka / Maths
+### ➗ Maths
 
 Four ways in, each with an **Explore** mode the child drives and a **Puzzle** mode that asks
 questions. Every problem is a picture before it is a number: you count unicorns in baskets,
@@ -30,7 +32,7 @@ watch them disappear, or fill in a rectangle.
 The area model is the one to look at. Tap any square and the rectangle fills in cell by cell,
 so `6 × 7` is a shape you can see rather than a fact to memorise:
 
-![The area model filling in cell by cell for 6 x 7](docs/screenshots/math-grid.png)
+![The area model filling in cell by cell for 6 by 7](docs/screenshots/math-grid.png)
 
 **Questions adapt.** Every fact the child meets is remembered as `{seen, wrong}`, and the
 sampler leans towards facts that are new or shaky. A child who has mastered ×2 stops being
@@ -39,19 +41,14 @@ asked ×2 quite so often.
 **Rounds have an end.** Ten questions fill ten dots, a streak counter tracks the run, and the
 round finishes with a celebration — rather than streaming forever.
 
-### 📖 Czytanie / Reading
+### 📖 Reading
 
 The child picks a hero, a friend, a place and a thing; the story is assembled around those
 choices, one sentence at a time, with a comprehension quiz at the end.
 
 ![Choosing a hero, a friend, a place and a thing](docs/screenshots/reading-pick.png)
 
-**Syllable mode** colours alternate syllables, which is how Polish children are taught to
-decode. It applies everywhere: stories, word matching, the flashcards and the silly sentences.
-
-![A story with syllable colouring on](docs/screenshots/reading-story.png)
-
-Plus three practice modes: 🔤 **Words** (match the picture to the spelling), 🗣️ **I read**
+Three more practice modes: 🔤 **Words** (match the picture to the spelling), 🗣️ **I read**
 (flashcards to read out loud), and 😄 **Funny** (randomly assembled silly sentences —
 *"A dancing dog laughs in a hat!"*).
 
@@ -59,17 +56,24 @@ Plus three practice modes: 🔤 **Words** (match the picture to the spelling), �
 
 Every story sentence and every word can be read aloud by the browser's speech synthesis.
 
+**Syllable mode** colours alternate syllables — the way Polish children are taught to decode —
+and applies everywhere: stories, word matching, flashcards and silly sentences. Here it is on
+a Polish story:
+
+![A Polish story with syllable colouring on](docs/screenshots/reading-story.png)
+
 ### Two currencies, on purpose
 
 ⭐ **Stars** are earned only by answering something the app can actually check.
 📚 **Pages read** come from the self-graded modes, where the child taps *"I read it!"*.
 Badges key off stars alone, so tapping through the flashcards cannot mint a crown.
 
-### 🇵🇱 / 🇬🇧 Bilingual throughout
+### 🇬🇧 / 🇵🇱 Bilingual throughout
 
 One toggle switches the interface, the content and the speech-synthesis voice, on every page.
+The screenshots above are the English build; the same app in Polish:
 
-![The maths game in English](docs/screenshots/math-en.png)
+![The maths game in Polish](docs/screenshots/math-pl.png)
 
 ### 📱 Works on a phone, works offline
 
@@ -118,7 +122,7 @@ Three layers:
   asserting no `undefined` leaks, no missing or doubled spaces, no run-together words.
 - **DOM** — tablist semantics and keyboard behaviour, round and streak bookkeeping.
 - **E2E** — full journeys on desktop and mobile viewports, an axe pass on every page and
-  mode, plus a regression test pinned to each bug listed below.
+  mode, plus a regression test pinned to each bug listed in the analysis below.
 
 ## Architecture
 
@@ -133,7 +137,7 @@ src/
   games/
     math/    countingMode factory (+ − ×), area grid, adaptive facts, answer options
     reading/ pure story assembly, syllable text rendering
-  content/   PL and EN content packs and copy, separate from the code
+  content/   English and Polish content packs and copy, separate from the code
   entries/   one module per page
 tests/       unit · e2e
 ```
@@ -151,8 +155,8 @@ See [docs/ANALYSIS.md](docs/ANALYSIS.md) for the audit this rewrite came from.
 
 ## Adding content
 
-Stories, words and silly sentences live in `src/content/pl/reading.js` and
-`src/content/en/reading.js`. `|` marks a syllable boundary. Add a hero, a place or a whole
+Stories, words and silly sentences live in `src/content/en/reading.js` and
+`src/content/pl/reading.js`. `|` marks a syllable boundary. Add a hero, a place or a whole
 story and the tests will tell you if any combination reads badly.
 
 ## Privacy
