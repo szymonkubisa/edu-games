@@ -55,6 +55,8 @@ Plus three practice modes: 🔤 **Words** (match the picture to the spelling), �
 (flashcards to read out loud), and 😄 **Funny** (randomly assembled silly sentences —
 *"A dancing dog laughs in a hat!"*).
 
+![Matching a picture to one of four spellings](docs/screenshots/reading-words.png)
+
 Every story sentence and every word can be read aloud by the browser's speech synthesis.
 
 ### Two currencies, on purpose
