@@ -211,6 +211,9 @@ export function createCountingMode(spec) {
       const delta = Number(btn.dataset.d);
       if (which === 'a') a = clamp(a + delta, range.aMin, exploreLimit);
       else b = clamp(b + delta, range.bMin, exploreLimit);
+      // Keep the operands sensible for the operation. Subtraction allows b === a
+      // in explore mode (taking everything away is worth seeing); the quiz's
+      // own filter keeps b < a so an answer is never zero.
       if (range.filter && !range.filter(a, b)) b = clamp(b, range.bMin, a);
       popSound();
       paintSteppers();
